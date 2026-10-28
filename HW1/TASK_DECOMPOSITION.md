@@ -34,7 +34,7 @@ Invariants: (1) exactly one cell has `tabIndex=0` (roving tabindex); (2) `aria-s
 - [X] **2.1** `sortData(data, sortState)` (stable, locale-aware, no mutation) — `feat(logic): implement sortData`
 - [X] **2.2** `filterData(data, query, columns)` — `feat(logic): implement filterData`
 - [X] **2.3** `paginate(data, page, size)` + clamp — `feat(logic): implement paginate`
-- [ ] **2.4** `moveFocus(focus, key, rows, cols)` (arrow keys, clamped) — `feat(a11y): implement focus navigation`
+- [X] **2.4** `moveFocus(focus, key, rows, cols)` (arrow keys, clamped) — `feat(a11y): implement focus navigation`
 - [ ] **2.5** Unit tests for 2.1–2.4 (incl. empty data, ties, out-of-range) — `test(logic): add unit tests`
 ### Phase C — Semantic UI
 - [ ] **3.1** Static `<table>` markup: `<caption>`/`aria-label`, `<thead>`, `<th scope="col">`, `<tbody>` — `feat(ui): semantic table skeleton`
