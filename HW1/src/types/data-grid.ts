@@ -11,6 +11,16 @@ export interface DataGridProps<T> {
   ariaLabel: string;
 }
 
+export type SortState<T> = {
+  key: keyof T;
+  dir: "asc" | "desc";
+} | null;
+
+export type GridFocus = {
+  row: number;
+  col: number;
+};
+
 // Kiểu dữ liệu của một dòng
 interface Student {
   id: number;
