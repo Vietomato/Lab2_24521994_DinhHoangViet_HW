@@ -5,8 +5,8 @@ import type { Student } from "./types/student";
 
 const columns: ColumnDef<Student>[] = [
   { header: "Mã sinh viên", accessorKey: "id" },
-  { header: "Họ tên", accessorKey: "name" },
-  { header: "GPA", accessorKey: "gpa" },
+  { header: "Họ tên", accessorKey: "name", sortable: true },
+  { header: "GPA", accessorKey: "gpa",sortable: true },
 ];
 
 export default function App() {
