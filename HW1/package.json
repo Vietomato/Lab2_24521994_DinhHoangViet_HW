@@ -10,9 +10,10 @@
     "globals": "^17.13.0",
     "typescript": "~5.9.0",
     "typescript-eslint": "^8.72.1",
-    "vite": "^8.3.5"
+    "vite": "^8.3.5",
+    "vitest": "^5.0.5"
   },
-    "name": "hw1-accessible-data-grid",
+  "name": "hw1-accessible-data-grid",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -21,7 +22,9 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "build": "npm run typecheck && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "react": "^19.3.1",

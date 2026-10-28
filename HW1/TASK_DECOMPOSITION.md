@@ -32,9 +32,9 @@ Invariants: (1) exactly one cell has `tabIndex=0` (roving tabindex); (2) `aria-s
 - [x] **1.4** Create sample dataset (≥ 200 rows, stable `id`) — `chore(data): add mock dataset`
 ### Phase B — Pure logic (no UI, unit-testable)
 - [X] **2.1** `sortData(data, sortState)` (stable, locale-aware, no mutation) — `feat(logic): implement sortData`
-- [ ] **2.2** `filterData(data, query, columns)` — `feat(logic): implement filterData`
-- [ ] **2.3** `paginate(data, page, size)` + clamp — `feat(logic): implement paginate`
-- [ ] **2.4** `moveFocus(focus, key, rows, cols)` (arrow keys, clamped) — `feat(a11y): implement focus navigation`
+- [X] **2.2** `filterData(data, query, columns)` — `feat(logic): implement filterData`
+- [X] **2.3** `paginate(data, page, size)` + clamp — `feat(logic): implement paginate`
+- [X] **2.4** `moveFocus(focus, key, rows, cols)` (arrow keys, clamped) — `feat(a11y): implement focus navigation`
 - [ ] **2.5** Unit tests for 2.1–2.4 (incl. empty data, ties, out-of-range) — `test(logic): add unit tests`
 ### Phase C — Semantic UI
 - [ ] **3.1** Static `<table>` markup: `<caption>`/`aria-label`, `<thead>`, `<th scope="col">`, `<tbody>` — `feat(ui): semantic table skeleton`
