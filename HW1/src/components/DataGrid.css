@@ -1,0 +1,114 @@
+/* Đặt rõ màu nền và chữ để tránh phụ thuộc mặc định trình duyệt. */
+body {
+  color: #111827;
+  background-color: #ffffff;
+}
+
+.data-grid {
+  color: #111827;
+  background-color: #ffffff;
+}
+
+.data-grid table {
+  color: #111827;
+  background-color: #ffffff;
+}
+
+.data-grid caption,
+.data-grid label,
+.data-grid th,
+.data-grid td,
+.data-grid p {
+  color: inherit;
+}
+
+/* Input và button có đường biên dễ nhận biết. */
+.data-grid input,
+.data-grid button {
+  color: #111827;
+  background-color: #ffffff;
+  border: 2px solid #4b5563;
+  font: inherit;
+  opacity: 1;
+}
+
+.data-grid input::placeholder {
+  color: #4b5563;
+  opacity: 1;
+}
+
+.data-grid button:not(:disabled):hover {
+  color: #111827;
+  background-color: #f3f4f6;
+}
+
+/* Trang hiện tại: thêm gạch chân và chữ đậm, không chỉ đổi màu. */
+.data-grid button[aria-current="page"] {
+  color: #ffffff;
+  background-color: #1e40af;
+  border-color: #1e40af;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.data-grid button[aria-current="page"]:not(:disabled):hover {
+  color: #ffffff;
+  background-color: #1e3a8a;
+  border-color: #1e3a8a;
+}
+
+/* Không giảm opacity khiến chữ và viền bị nhạt. */
+.data-grid button:disabled {
+  color: #374151;
+  background-color: #f3f4f6;
+  border-color: #4b5563;
+  border-style: dashed;
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+/* Dòng được chọn. */
+.data-grid tbody tr[aria-selected="true"] > td {
+  color: #111827;
+  background-color: #dbeafe;
+}
+
+/* Dấu hiệu lựa chọn bổ sung ngoài màu nền. */
+.data-grid tbody tr[aria-selected="true"] > td:first-child {
+  box-shadow: inset 4px 0 0 #005fcc;
+  font-weight: 700;
+}
+
+/* Focus cho input, nút và bảng khi dùng làm điểm focus dự phòng. */
+.data-grid input:focus-visible,
+.data-grid button:focus-visible,
+.data-grid table:focus-visible {
+  outline: 3px solid #005fcc;
+  outline-offset: 3px;
+}
+
+/* Vòng nằm trong ô để hạn chế bị ô bên cạnh che. */
+.data-grid td[data-grid-cell]:focus-visible {
+  outline: 3px solid #005fcc;
+  outline-offset: -3px;
+}
+
+/* Tôn trọng bảng màu tương phản cao do hệ điều hành chọn. */
+@media (forced-colors: active) {
+  .data-grid input:focus-visible,
+  .data-grid button:focus-visible,
+  .data-grid table:focus-visible,
+  .data-grid td[data-grid-cell]:focus-visible {
+    outline-color: Highlight;
+  }
+
+  .data-grid tbody tr[aria-selected="true"] > td {
+    color: HighlightText;
+    background-color: Highlight;
+    forced-color-adjust: none;
+  }
+
+  .data-grid tbody tr[aria-selected="true"] > td:focus-visible {
+    outline-color: HighlightText;
+  }
+}

@@ -41,11 +41,11 @@ Invariants: (1) exactly one cell has `tabIndex=0` (roving tabindex); (2) `aria-s
 - [X] **3.2** Sortable header as `<button>` + `aria-sort` — `feat(ui): sortable headers`
 - [X] **3.3** Filter input with `<label>` + live region (`aria-live="polite"`) for result count — `feat(ui): filter control`
 - [X] **3.4** Pagination `<nav aria-label>` with `<button>`s, `aria-current="page"` — `feat(ui): pagination`
-- [] **3.5** Roving tabindex + `keydown` (`e.key`) handler via delegation — `feat(a11y): keyboard navigation`
-- [ ] **3.6** Enter = select (`onRowSelect`), Space = toggle (`aria-selected`/`aria-pressed`); `preventDefault` on Space — `feat(a11y): select and toggle`
-- [ ] **3.7** Row `key={row.id}` (NOT index) — verify with sorting
+- [X] **3.5** Roving tabindex + `keydown` (`e.key`) handler via delegation — `feat(a11y): keyboard navigation`
+- [X] **3.6** Enter = select (`onRowSelect`), Space = toggle (`aria-selected`/`aria-pressed`); `preventDefault` on Space — `feat(a11y): select and toggle`
+- [X] **3.7** Row `key={row.id}` (NOT index) — verify with sorting
 ### Phase D — Accessibility & Quality
-- [ ] **4.1** Contrast check all tokens ≥ 4.5:1 (text) / 3:1 (UI); `:focus-visible` ring — `style(a11y): contrast and focus`
+- [X] **4.1** Contrast check all tokens ≥ 4.5:1 (text) / 3:1 (UI); `:focus-visible` ring — `style(a11y): contrast and focus`
 - [ ] **4.2** Screen-reader pass (NVDA/VoiceOver): record notes in `/evidence/sr-notes.md`
 - [ ] **4.3** Lighthouse run → 100/100, save report — `docs(evidence): lighthouse report`
 - [ ] **4.4** Fill `AI_FAILURE_AUDIT.md` (≥ 3) — `docs(audit): add AI failure audit`
