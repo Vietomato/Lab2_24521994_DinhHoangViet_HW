@@ -4,7 +4,10 @@ import type {
   SortState,
 } from "../types/data-grid";
 import { filterData } from "../utils/filterData";
+import { paginate } from "../utils/paginate";
 import { sortData } from "../utils/sortData";
+
+const PAGE_SIZE = 10;
 
 export function DataGrid<T extends { id: string | number }>({
   data,
@@ -15,10 +18,23 @@ export function DataGrid<T extends { id: string | number }>({
 
   const [query, setQuery] = useState("");
   const [sortState, setSortState] = useState<SortState<T>>(null);
+  const [page, setPage] = useState(0);
 
-  // Lọc trước, sắp xếp sau.
+  // Lọc → sắp xếp → phân trang.
   const filteredData = filterData(data, query, columns);
   const sortedData = sortData(filteredData, sortState);
+  const pagination = paginate(sortedData, page, PAGE_SIZE);
+
+  // Đồng bộ state nếu dữ liệu thay đổi làm trang hiện tại vượt biên.
+  // Có điều kiện nên render tiếp theo sẽ không cập nhật lại.
+  if (page !== pagination.page) {
+    setPage(pagination.page);
+  }
+
+  function handleQueryChange(value: string): void {
+    setQuery(value);
+    setPage(0);
+  }
 
   function handleSort(key: keyof T): void {
     setSortState(current => ({
@@ -45,7 +61,7 @@ export function DataGrid<T extends { id: string | number }>({
           id={searchId}
           type="search"
           value={query}
-          onChange={event => setQuery(event.target.value)}
+          onChange={event => handleQueryChange(event.target.value)}
         />
       </div>
 
@@ -97,7 +113,7 @@ export function DataGrid<T extends { id: string | number }>({
         </thead>
 
         <tbody>
-          {sortedData.length === 0 ? (
+          {pagination.items.length === 0 ? (
             <tr>
               <td colSpan={columns.length}>
                 {data.length === 0
@@ -106,7 +122,7 @@ export function DataGrid<T extends { id: string | number }>({
               </td>
             </tr>
           ) : (
-            sortedData.map(item => (
+            pagination.items.map(item => (
               <tr key={item.id}>
                 {columns.map(column => {
                   const value = item[column.accessorKey];
@@ -128,6 +144,50 @@ export function DataGrid<T extends { id: string | number }>({
           )}
         </tbody>
       </table>
+
+      <nav aria-label={`Phân trang ${ariaLabel}`}>
+        <button
+          type="button"
+          disabled={pagination.pageCount === 0 || pagination.page === 0}
+          onClick={() => setPage(pagination.page - 1)}
+        >
+          Trang trước
+        </button>
+
+        {Array.from(
+          { length: pagination.pageCount },
+          (_, pageIndex) => (
+            <button
+              key={`page-${pageIndex}`}
+              type="button"
+              aria-label={`Trang ${pageIndex + 1}`}
+              aria-current={
+                pageIndex === pagination.page ? "page" : undefined
+              }
+              onClick={() => setPage(pageIndex)}
+            >
+              {pageIndex + 1}
+            </button>
+          ),
+        )}
+
+        <button
+          type="button"
+          disabled={
+            pagination.pageCount === 0 ||
+            pagination.page >= pagination.pageCount - 1
+          }
+          onClick={() => setPage(pagination.page + 1)}
+        >
+          Trang sau
+        </button>
+
+        <p>
+          {pagination.pageCount === 0
+            ? "Không có trang dữ liệu."
+            : `Trang ${pagination.page + 1} / ${pagination.pageCount}`}
+        </p>
+      </nav>
     </div>
   );
 }
