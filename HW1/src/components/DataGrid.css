@@ -1,0 +1,5 @@
+td[data-grid-cell]:focus-visible,
+table[role="grid"]:focus-visible {
+  outline: 3px solid #005fcc;
+  outline-offset: -3px;
+}
