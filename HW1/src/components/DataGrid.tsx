@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import type {
   DataGridProps,
   SortState,
 } from "../types/data-grid";
+import { filterData } from "../utils/filterData";
 import { sortData } from "../utils/sortData";
 
 export function DataGrid<T extends { id: string | number }>({
@@ -10,9 +11,14 @@ export function DataGrid<T extends { id: string | number }>({
   columns,
   ariaLabel,
 }: DataGridProps<T>) {
+  const searchId = useId();
+
+  const [query, setQuery] = useState("");
   const [sortState, setSortState] = useState<SortState<T>>(null);
 
-  const sortedData = sortData(data, sortState);
+  // Lọc trước, sắp xếp sau.
+  const filteredData = filterData(data, query, columns);
+  const sortedData = sortData(filteredData, sortState);
 
   function handleSort(key: keyof T): void {
     setSortState(current => ({
@@ -29,78 +35,99 @@ export function DataGrid<T extends { id: string | number }>({
   }
 
   return (
-    <table>
-      <caption>{ariaLabel}</caption>
+    <div>
+      <div>
+        <label htmlFor={searchId}>
+          Tìm kiếm trong {ariaLabel}
+        </label>
 
-      <thead>
-        <tr>
-          {columns.map(column => {
-            const isSorted = sortState?.key === column.accessorKey;
+        <input
+          id={searchId}
+          type="search"
+          value={query}
+          onChange={event => setQuery(event.target.value)}
+        />
+      </div>
 
-            const ariaSort = isSorted
-              ? sortState.dir === "asc"
-                ? "ascending"
-                : "descending"
-              : undefined;
+      <p role="status" aria-live="polite" aria-atomic="true">
+        Có {filteredData.length} kết quả trên tổng số {data.length} dòng.
+      </p>
 
-            const indicator = isSorted
-              ? sortState.dir === "asc"
-                ? " ↑"
-                : " ↓"
-              : "";
+      <table>
+        <caption>{ariaLabel}</caption>
 
-            return (
-              <th
-                key={String(column.accessorKey)}
-                scope="col"
-                aria-sort={ariaSort}
-              >
-                {column.sortable ? (
-                  <button
-                    type="button"
-                    onClick={() => handleSort(column.accessorKey)}
-                  >
-                    {column.header}
-                    <span aria-hidden="true">{indicator}</span>
-                  </button>
-                ) : (
-                  column.header
-                )}
-              </th>
-            );
-          })}
-        </tr>
-      </thead>
-
-      <tbody>
-        {sortedData.length === 0 ? (
+        <thead>
           <tr>
-            <td colSpan={columns.length}>
-              Không có dữ liệu.
-            </td>
+            {columns.map(column => {
+              const isSorted = sortState?.key === column.accessorKey;
+
+              const ariaSort = isSorted
+                ? sortState.dir === "asc"
+                  ? "ascending"
+                  : "descending"
+                : undefined;
+
+              const indicator = isSorted
+                ? sortState.dir === "asc"
+                  ? " ↑"
+                  : " ↓"
+                : "";
+
+              return (
+                <th
+                  key={String(column.accessorKey)}
+                  scope="col"
+                  aria-sort={ariaSort}
+                >
+                  {column.sortable ? (
+                    <button
+                      type="button"
+                      onClick={() => handleSort(column.accessorKey)}
+                    >
+                      {column.header}
+                      <span aria-hidden="true">{indicator}</span>
+                    </button>
+                  ) : (
+                    column.header
+                  )}
+                </th>
+              );
+            })}
           </tr>
-        ) : (
-          sortedData.map(item => (
-            <tr key={item.id}>
-              {columns.map(column => {
-                const value = item[column.accessorKey];
+        </thead>
 
-                const content =
-                  typeof value === "string" ||
-                  typeof value === "number"
-                    ? value
-                    : "—";
-
-                return (
-                  <td key={String(column.accessorKey)}>
-                    {content}
-                  </td>
-                );
-              })}
+        <tbody>
+          {sortedData.length === 0 ? (
+            <tr>
+              <td colSpan={columns.length}>
+                {data.length === 0
+                  ? "Không có dữ liệu."
+                  : "Không tìm thấy kết quả phù hợp."}
+              </td>
             </tr>
-          ))
-        )}
-      </tbody>
-    </table>
+          ) : (
+            sortedData.map(item => (
+              <tr key={item.id}>
+                {columns.map(column => {
+                  const value = item[column.accessorKey];
+
+                  const content =
+                    typeof value === "string" ||
+                    typeof value === "number"
+                      ? value
+                      : "—";
+
+                  return (
+                    <td key={String(column.accessorKey)}>
+                      {content}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+    </div>
   );
 }
