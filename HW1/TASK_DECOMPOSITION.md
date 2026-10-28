@@ -4,6 +4,7 @@
 > **Pipeline:** Slice → Contract → Atomic Gen → Independent Verify → Atomic Commit.
 
 ## 0. Goal & Definition of Done (DoD)
+- [ ]
 - [ ] Data-Grid with **sorting, filtering, pagination**
 - [ ] WCAG 2.2 AA (contrast ≥ 4.5:1, screen-reader support, visible focus)
 - [ ] Keyboard: Arrow keys move between cells; Enter selects; Space toggles
