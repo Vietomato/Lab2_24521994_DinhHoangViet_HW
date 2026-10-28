@@ -26,12 +26,12 @@ Invariants: (1) exactly one cell has `tabIndex=0` (roving tabindex); (2) `aria-s
 
 ## 2. Work Breakdown Structure
 ### Phase A — Foundation
-- [ ] **1.1** Scaffold Vite + TS + ESLint (`react-hooks`, `jsx-a11y`) — `chore(init): scaffold vite ts project`
-- [ ] **1.2** Write `project-rules.md` (banned patterns, a11y rules) — `docs(rules): add project rules`
-- [ ] **1.3** Define types/contract above — `feat(types): define grid contracts`
-- [ ] **1.4** Create sample dataset (≥ 200 rows, stable `id`) — `chore(data): add mock dataset`
+- [x] **1.1** Scaffold Vite + TS + ESLint (`react-hooks`, `jsx-a11y`) — `chore(init): scaffold vite ts project`
+- [x] **1.2** Write `project-rules.md` (banned patterns, a11y rules) — `docs(rules): add project rules`
+- [x] **1.3** Define types/contract above — `feat(types): define grid contracts`
+- [x] **1.4** Create sample dataset (≥ 200 rows, stable `id`) — `chore(data): add mock dataset`
 ### Phase B — Pure logic (no UI, unit-testable)
-- [ ] **2.1** `sortData(data, sortState)` (stable, locale-aware, no mutation) — `feat(logic): implement sortData`
+- [X] **2.1** `sortData(data, sortState)` (stable, locale-aware, no mutation) — `feat(logic): implement sortData`
 - [ ] **2.2** `filterData(data, query, columns)` — `feat(logic): implement filterData`
 - [ ] **2.3** `paginate(data, page, size)` + clamp — `feat(logic): implement paginate`
 - [ ] **2.4** `moveFocus(focus, key, rows, cols)` (arrow keys, clamped) — `feat(a11y): implement focus navigation`
