@@ -4,7 +4,6 @@
 > **Pipeline:** Slice → Contract → Atomic Gen → Independent Verify → Atomic Commit.
 
 ## 0. Goal & Definition of Done (DoD)
-- [ ]
 - [ ] Data-Grid with **sorting, filtering, pagination**
 - [ ] WCAG 2.2 AA (contrast ≥ 4.5:1, screen-reader support, visible focus)
 - [ ] Keyboard: Arrow keys move between cells; Enter selects; Space toggles
@@ -27,7 +26,7 @@ Invariants: (1) exactly one cell has `tabIndex=0` (roving tabindex); (2) `aria-s
 
 ## 2. Work Breakdown Structure
 ### Phase A — Foundation
-- [ ] **1.1** Scaffold Vite + TS + ESLint (`react-hooks`, `jsx-a11y`) — `chore(init): scaffold vite ts project`
+- [x] **1.1** Scaffold Vite + TS + ESLint (`react-hooks`, `jsx-a11y`) — `chore(init): scaffold vite ts project`
 - [ ] **1.2** Write `project-rules.md` (banned patterns, a11y rules) — `docs(rules): add project rules`
 - [ ] **1.3** Define types/contract above — `feat(types): define grid contracts`
 - [ ] **1.4** Create sample dataset (≥ 200 rows, stable `id`) — `chore(data): add mock dataset`
