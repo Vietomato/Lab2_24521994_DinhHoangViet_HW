@@ -18,6 +18,7 @@ import "./DataGrid.css";
 
 const PAGE_SIZE = 10;
 
+
 export function DataGrid<T extends { id: string | number }>({
   data,
   columns,
@@ -197,7 +198,7 @@ export function DataGrid<T extends { id: string | number }>({
   }
 
   return (
-    <div>
+    <div className="data-grid">
       <div>
         <label htmlFor={searchId}>
           Tìm kiếm trong {ariaLabel}
@@ -391,4 +392,5 @@ export function DataGrid<T extends { id: string | number }>({
       </nav>
     </div>
   );
+  
 }
