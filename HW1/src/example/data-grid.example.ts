@@ -1,11 +1,5 @@
 import type { ColumnDef, DataGridProps } from "../types/data-grid.ts";
-
-interface Student {
-  id: string;
-  name: string;
-  gpa: number;
-}
-
+import type { Student } from "../types/student";
 const columns: ColumnDef<Student>[] = [
   { header: "MSSV", accessorKey: "id" },
   { header: "Họ tên", accessorKey: "name", sortable: true },
