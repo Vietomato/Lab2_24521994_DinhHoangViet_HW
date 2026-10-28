@@ -41,7 +41,7 @@ Invariants: (1) exactly one cell has `tabIndex=0` (roving tabindex); (2) `aria-s
 - [X] **3.2** Sortable header as `<button>` + `aria-sort` — `feat(ui): sortable headers`
 - [X] **3.3** Filter input with `<label>` + live region (`aria-live="polite"`) for result count — `feat(ui): filter control`
 - [X] **3.4** Pagination `<nav aria-label>` with `<button>`s, `aria-current="page"` — `feat(ui): pagination`
-- [] **3.5** Roving tabindex + `keydown` (`e.key`) handler via delegation — `feat(a11y): keyboard navigation`
+- [X] **3.5** Roving tabindex + `keydown` (`e.key`) handler via delegation — `feat(a11y): keyboard navigation`
 - [ ] **3.6** Enter = select (`onRowSelect`), Space = toggle (`aria-selected`/`aria-pressed`); `preventDefault` on Space — `feat(a11y): select and toggle`
 - [ ] **3.7** Row `key={row.id}` (NOT index) — verify with sorting
 ### Phase D — Accessibility & Quality

@@ -18,6 +18,9 @@ export default function App() {
         data={students}
         columns={columns}
         ariaLabel="Danh sách sinh viên"
+        onRowSelect={student => {
+  console.log("Đã chọn:", student);
+}}
       />
     </main>
   );

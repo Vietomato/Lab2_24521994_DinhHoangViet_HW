@@ -22,20 +22,27 @@ export function DataGrid<T extends { id: string | number }>({
   data,
   columns,
   ariaLabel,
+  onRowSelect,
 }: DataGridProps<T>) {
   const searchId = useId();
 
   const [query, setQuery] = useState("");
   const [sortState, setSortState] = useState<SortState<T>>(null);
   const [page, setPage] = useState(0);
+
   const [focus, setFocus] = useState<GridFocus>({
     row: 0,
     col: 0,
   });
 
+  const [selectedId, setSelectedId] = useState<
+    string | number | null
+  >(null);
+
   const tableRef = useRef<HTMLTableElement>(null);
   const cellFocusActive = useRef(false);
 
+  // Lọc → sắp xếp → phân trang.
   const filteredData = filterData(data, query, columns);
   const sortedData = sortData(filteredData, sortState);
   const pagination = paginate(sortedData, page, PAGE_SIZE);
@@ -48,7 +55,6 @@ export function DataGrid<T extends { id: string | number }>({
   const cols = columns.length;
   const visibleFocus = moveFocus(focus, "", rows, cols);
 
-  // Khôi phục focus sau khi React cập nhật các ô.
   useLayoutEffect(() => {
     const table = tableRef.current;
 
@@ -110,15 +116,6 @@ export function DataGrid<T extends { id: string | number }>({
     event: KeyboardEvent<HTMLTableElement>,
   ): void {
     if (
-      event.key !== "ArrowUp" &&
-      event.key !== "ArrowDown" &&
-      event.key !== "ArrowLeft" &&
-      event.key !== "ArrowRight"
-    ) {
-      return;
-    }
-
-    if (
       event.altKey ||
       event.ctrlKey ||
       event.metaKey ||
@@ -129,8 +126,8 @@ export function DataGrid<T extends { id: string | number }>({
 
     const cell = event.target;
 
-    // Chỉ xử lý khi chính ô dữ liệu đang focus.
-    // Không can thiệp vào button hoặc input.
+    // Chỉ bắt phím khi chính ô dữ liệu đang focus.
+    // Không can thiệp vào button/input.
     if (
       !(cell instanceof HTMLTableCellElement) ||
       !cell.matches("td[data-grid-cell]") ||
@@ -139,11 +136,45 @@ export function DataGrid<T extends { id: string | number }>({
       return;
     }
 
+    const row = Number(cell.dataset.row);
+    const col = Number(cell.dataset.col);
+
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+
+      if (event.repeat) {
+        return;
+      }
+
+      const item = pagination.items[row];
+
+      if (item === undefined) {
+        return;
+      }
+
+      if (event.key === "Enter") {
+        setSelectedId(item.id);
+        onRowSelect?.(item);
+      } else {
+        setSelectedId(current =>
+          current === item.id ? null : item.id,
+        );
+      }
+
+      return;
+    }
+
+    if (
+      event.key !== "ArrowUp" &&
+      event.key !== "ArrowDown" &&
+      event.key !== "ArrowLeft" &&
+      event.key !== "ArrowRight"
+    ) {
+      return;
+    }
+
     const nextFocus = moveFocus(
-      {
-        row: Number(cell.dataset.row),
-        col: Number(cell.dataset.col),
-      },
+      { row, col },
       event.key,
       rows,
       cols,
@@ -188,6 +219,7 @@ export function DataGrid<T extends { id: string | number }>({
         ref={tableRef}
         role="grid"
         aria-label={ariaLabel}
+        aria-multiselectable={false}
         tabIndex={-1}
         onKeyDown={handleGridKeyDown}
         onFocusCapture={event => {
@@ -215,8 +247,6 @@ export function DataGrid<T extends { id: string | number }>({
         onBlurCapture={event => {
           const nextTarget = event.relatedTarget;
 
-          // Khi ô bị xóa, relatedTarget có thể là null.
-          // Effect kiểm tra lại DOM sau cập nhật.
           if (nextTarget === null) {
             return;
           }
@@ -280,7 +310,10 @@ export function DataGrid<T extends { id: string | number }>({
             </tr>
           ) : (
             pagination.items.map((item, rowIndex) => (
-              <tr key={item.id}>
+              <tr
+                key={item.id}
+                aria-selected={selectedId === item.id}
+              >
                 {columns.map((column, colIndex) => {
                   const value = item[column.accessorKey];
 
