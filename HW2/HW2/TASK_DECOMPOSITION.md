@@ -96,15 +96,15 @@ feat(queue): add cancellation and disposal
 
 ## Task 5 — Frequency Visualizer
 
-- [ ] Implement one Canvas or SVG visualizer module.
-- [ ] Read frequency data from AnalyserNode.
-- [ ] Choose fftSize explicitly:
+- [X] Implement one Canvas or SVG visualizer module.
+- [X] Read frequency data from AnalyserNode.
+- [X] Choose fftSize explicitly:
       512 gives 256 frequency bins;
       1024 gives 512 frequency bins.
-- [ ] Reuse the frequency array.
-- [ ] Draw through requestAnimationFrame.
-- [ ] Stop the animation and release references on cleanup.
-- [ ] Avoid React state updates on every frame.
+- [X] Reuse the frequency array.
+- [X] Draw through requestAnimationFrame.
+- [X] Stop the animation and release references on cleanup.
+- [X] Avoid React state updates on every frame.
 
 Verify:
 - The visualization responds to audio.
@@ -117,13 +117,13 @@ feat(visualizer): render audio frequency spectrum
 
 ## Task 6 — Accessible UI and Integration
 
-- [ ] Connect the engine, queue, and visualizer to React.
-- [ ] Add track enqueue, play, stop, and cancel controls.
-- [ ] Display queued/loading/ready/playing/error/cancelled states.
-- [ ] Use semantic buttons, labels, and visible focus.
-- [ ] Show understandable errors.
-- [ ] Initialize services once per intended lifecycle.
-- [ ] Clean up services and animation on unmount.
+- [X] Connect the engine, queue, and visualizer to React.
+- [X] Add track enqueue, play, stop, and cancel controls.
+- [X] Display queued/loading/ready/playing/error/cancelled states.
+- [X] Use semantic buttons, labels, and visible focus.
+- [X] Show understandable errors.
+- [X] Initialize services once per intended lifecycle.
+- [X] Clean up services and animation on unmount.
 
 Verify:
 - Complete enqueue → prepare → play → finish flow.
@@ -136,12 +136,12 @@ feat(ui): integrate accessible audio queue controls
 
 ## Task 7 — Automated Verification
 
-- [ ] Add the minimum test setup needed.
-- [ ] Test FIFO task starts and the concurrency limit.
-- [ ] Test out-of-order completion and playback ordering.
-- [ ] Test failure recovery and promise settlement.
-- [ ] Test cancellation and ignored late results.
-- [ ] Test cleanup using suitable API mocks.
+- [X] Add the minimum test setup needed.
+- [X] Test FIFO task starts and the concurrency limit.
+- [X] Test out-of-order completion and playback ordering.
+- [X] Test failure recovery and promise settlement.
+- [X] Test cancellation and ignored late results.
+- [X] Test cleanup using suitable API mocks.
 
 Verify:
 - Tests, typecheck, lint, and build pass.
@@ -153,13 +153,13 @@ test(hw2): verify queue lifecycle and cancellation
 
 ## Task 8 — Evidence and Documentation
 
-- [ ] Record actual browser playback results.
-- [ ] Save a Performance recording or screenshots.
-- [ ] Inspect resource behavior across repeated play/stop cycles.
-- [ ] Document cancellation and cleanup checks.
-- [ ] Write README: setup, architecture, controls, limitations.
-- [ ] Document actual AI failures and manual fixes.
-- [ ] Review the Definition of Done.
+- [X] Record actual browser playback results.
+- [X] Save a Performance recording or screenshots.
+- [X] Inspect resource behavior across repeated play/stop cycles.
+- [X] Document cancellation and cleanup checks.
+- [X] Write README: setup, architecture, controls, limitations.
+- [X] Document actual AI failures and manual fixes.
+- [X] Review the Definition of Done.
 
 Verify:
 - Evidence corresponds to the current implementation.
