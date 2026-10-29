@@ -178,4 +178,20 @@ Committed the lifecycle reducer with the requested message:
 
 ## Assistant — Task 4 result
 
-Pending commit result.
+> Đã triển khai mock service có shared state cho một sản phẩm, 10 đơn vị tồn và
+> reservation 30 giây. Service hỗ trợ reserve/cancel/expire/checkout, idempotency,
+> clock/delay/failure injection và dispose.
+>
+> Quy tắc race: service xử lý expiry trước quyết định thao tác; expiry thắng tại
+> `now >= expiresAt`, checkout chỉ thắng nếu commit khi `now < expiresAt`.
+>
+> Typecheck, lint, build và kiểm tra xác định các invariant đều đạt. Đúng 10/20
+> request đồng thời được cấp hold; kiểm tra thêm hủy/expiry không hoàn tồn hai
+> lần, checkout lặp không tạo order mới, failure/retry và dispose khi đang chờ.
+> Chưa tích hợp UI hoặc thêm automated test runner (để Task 7).
+>
+> Commit `4fbf9ad` — `feat(service): implement inventory simulation`.
+
+The Task 4 implementation was committed first. This log entry was finalized in
+a follow-up documentation-only commit so the log could include the verified
+commit ID and final response.
