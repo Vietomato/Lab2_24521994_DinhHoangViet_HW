@@ -12,19 +12,19 @@ These quantities are demo choices. Authentication, a database, a real payment pr
 - A task may contain related functions; split generation further when needed to maintain a focused module boundary.
 - Do not create empty commits or introduce defects to meet submission requirements.
 3. Definition of Done
-- [ ] Countdown derives remaining time from an absolute deadline and never displays negative time.
-- [ ] Sale expiry and reservation expiry are handled separately.
-- [ ] Reservation states and permitted transitions are explicit.
-- [ ] Optimistic UI updates reconcile or roll back correctly.
-- [ ] Inventory never becomes negative or exceeds initial stock through duplicate releases.
-- [ ] Cancelled or expired reservations release inventory at most once.
-- [ ] Repeated checkout does not create duplicate orders or consume stock twice.
-- [ ] Competing requests and late responses have consistent outcomes.
-- [ ] Timers and asynchronous callbacks are cleaned up or invalidated.
-- [ ] Relevant tests, typecheck, lint, and build pass.
-- [ ] Evidence records actual observations and simulation limitations.
-- [ ] AI_FAILURE_AUDIT.md contains at least three observed AI flaws with corrections and evidence.
-- [ ] At least eight meaningful Conventional Commits are retained.
+- [X] Countdown derives remaining time from an absolute deadline and never displays negative time.
+- [X] Sale expiry and reservation expiry are handled separately.
+- [X] Reservation states and permitted transitions are explicit.
+- [X] Optimistic UI updates reconcile or roll back correctly.
+- [X] Inventory never becomes negative or exceeds initial stock through duplicate releases.
+- [X] Cancelled or expired reservations release inventory at most once.
+- [X] Repeated checkout does not create duplicate orders or consume stock twice.
+- [X] Competing requests and late responses have consistent outcomes.
+- [X] Timers and asynchronous callbacks are cleaned up or invalidated.
+- [X] Relevant tests, typecheck, lint, and build pass (per recorded Task 7 results).
+- [X] Evidence records actual observations and simulation limitations; missing raw outputs/screenshots are disclosed.
+- [X] AI_FAILURE_AUDIT.md contains at least three observed AI flaws with corrections and evidence.
+- [X] At least eight meaningful Conventional Commits are retained (10 HW3 commits before Task 8).
 Task 1 — Foundation and Contracts
 - [X] Inspect existing files before scaffolding; preserve completed work.
 - [X] Configure React, TypeScript strict mode, Vite, and linting.
@@ -113,13 +113,13 @@ Verify: automated tests, typecheck, lint, and build pass; Task 6's browser run s
 
 Commit: test(hw3): verify sale invariants
 Task 8 — Evidence and Documentation
-- [ ] Update README.md to match the final source, scripts, and limitations.
-- [ ] Write a short REPORT.md explaining architecture, deadline timing, state transitions, inventory behavior, and verification.
-- [ ] Save real evidence under evidence/ with explanatory captions.
-- [ ] Document at least three actually observed AI flaws in AI_FAILURE_AUDIT.md.
-- [ ] Include prompt/output, risk, detection evidence, correction, and verification outcome for each audit entry.
-- [ ] Separate expected outcomes from observed outcomes.
-- [ ] Check all Definition of Done items and at least eight meaningful commits.
+- [X] Update README.md to match the final source, scripts, and limitations.
+- [X] Write a short REPORT.md explaining architecture, deadline timing, state transitions, inventory behavior, and verification.
+- [X] Retain the supplied textual evidence under evidence/ and document missing screenshots/raw diagnostics with capture instructions; do not claim they exist.
+- [X] Document at least three actually observed AI flaws in AI_FAILURE_AUDIT.md.
+- [X] Include prompt, recorded failure, risk, evidence, correction, and verification outcome for each audit entry; identify unavailable raw output.
+- [X] Separate expected outcomes from observed outcomes.
+- [X] Check all Definition of Done items and at least eight meaningful commits; 10 meaningful HW3 commits were present before this documentation commit.
 Verify: every completion claim is supported by source inspection or recorded execution; unresolved issues remain visible.
 
 Commit: docs(hw3): add evidence and AI failure audit
