@@ -78,12 +78,12 @@ feat(queue): implement concurrent FIFO preparation
 
 ## Task 4 — Cancellation and Queue Disposal
 
-- [ ] Cancel pending and active preparation tasks.
-- [ ] Abort fetch using AbortController.
-- [ ] Ignore decode results if cancellation occurred.
-- [ ] Settle cancelled task promises.
-- [ ] Prevent late results from updating a disposed queue.
-- [ ] Release task references and unused buffers.
+- [X] Cancel pending and active preparation tasks.
+- [X] Abort fetch using AbortController.
+- [X] Ignore decode results if cancellation occurred.
+- [X] Settle cancelled task promises.
+- [X] Prevent late results from updating a disposed queue.
+- [X] Release task references and unused buffers.
 
 Verify:
 - Cancel before start, during fetch, and during decode.
