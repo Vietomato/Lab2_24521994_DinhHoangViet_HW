@@ -27,6 +27,20 @@ export type ReservationEvent =
       readonly error: ServiceError;
     }
   | {
+      readonly type: "RESERVE_CANCEL_REQUESTED";
+      readonly requestId: RequestId;
+    }
+  | {
+      readonly type: "RESERVE_CANCELLED";
+      readonly requestId: RequestId;
+    }
+  | {
+      readonly type: "RESERVE_CLEANUP_STARTED";
+      readonly requestId: RequestId;
+      readonly cleanupRequestId: RequestId;
+      readonly reservation: ActiveReservation;
+    }
+  | {
       readonly type: "CHECKOUT_STARTED";
       readonly requestId: RequestId;
       readonly idempotencyKey: IdempotencyKey;
@@ -139,6 +153,32 @@ export function reservationReducer(
             requestId: state.requestId,
             idempotencyKey: state.idempotencyKey,
             error: event.error,
+          }
+        : state;
+
+    case "RESERVE_CANCEL_REQUESTED":
+      return state.status === "RESERVING" &&
+        state.requestId === event.requestId
+        ? {
+            status: "CANCELLING_RESERVE",
+            requestId: state.requestId,
+            idempotencyKey: state.idempotencyKey,
+          }
+        : state;
+
+    case "RESERVE_CANCELLED":
+      return state.status === "CANCELLING_RESERVE" &&
+        state.requestId === event.requestId
+        ? { status: "IDLE" }
+        : state;
+
+    case "RESERVE_CLEANUP_STARTED":
+      return state.status === "CANCELLING_RESERVE" &&
+        state.requestId === event.requestId
+        ? {
+            status: "CANCELLING",
+            reservation: event.reservation,
+            requestId: event.cleanupRequestId,
           }
         : state;
 

@@ -88,13 +88,13 @@ Verify: the complete flow works with mouse and keyboard; pending/error states ar
 
 Commit: feat(ui): integrate flash sale flow
 Task 6 — Concurrency and Lifecycle Review
-- [ ] Review duplicate clicks, overlapping requests, stale responses, and checkout/expiry races.
-- [ ] Handle cancellation or unmount while a reservation request is pending.
-- [ ] Prevent late UI updates; also release or expire orphaned confirmed reservations according to the service policy.
-- [ ] Add a repeatable demonstration of 20 overlapping reservation requests against one service initialized with 10 units.
-- [ ] Show actual success/failure counts and final inventory.
-- [ ] Keep the demo separate from normal user checkout flow.
-- [ ] Fix observed defects and explain changes; do not deliberately introduce defects.
+- [X] Review duplicate clicks, overlapping requests, stale responses, and checkout/expiry races.
+- [X] Handle cancellation or unmount while a reservation request is pending.
+- [X] Prevent late UI updates; also release or expire orphaned confirmed reservations according to the service policy.
+- [X] Add a repeatable demonstration of 20 overlapping reservation requests against one service initialized with 10 units.
+- [X] Show actual success/failure counts and final inventory.
+- [X] Keep the demo separate from normal user checkout flow.
+- [X] Review and complete concurrency behavior without deliberately introducing defects.
 Verify: at most 10 reservations succeed while none expire or are released during the scenario; inventory is non-negative; stale operations cannot replace newer state; cleanup is safe.
 
 Suggested commit: fix(concurrency): handle duplicate and stale requests

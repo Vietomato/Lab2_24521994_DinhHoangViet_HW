@@ -1,6 +1,6 @@
 # Copilot IDE Prompt Log
 
-Conversation log for Task 2 through Task 5, including user prompts, assistant
+Conversation log for Task 2 through Task 6, including user prompts, assistant
 responses, and a concise record of the workflow and verification. Times are local
 to the conversation where available. Tool activity is summarized rather than
 reproduced command-by-command.
@@ -262,3 +262,58 @@ commit ID and final response.
 
 The prompt log was finalized after the implementation commit in a follow-up
 documentation-only commit.
+
+## User — Task 6
+
+> Làm task 6: rà soát và hoàn thiện xử lý concurrency
+> trên code hiện tại.
+>
+> Kiểm tra bấm trùng, response sai thứ tự, hủy khi request
+> đang chạy, checkout gần expiry và kết quả sau unmount.
+> Không chỉ dựa vào disabled button để bảo đảm tính đúng đắn.
+>
+> Bổ sung cách chạy 20 yêu cầu giữ hàng đồng thời
+> trên cùng service có tồn 10, hiển thị kết quả thật.
+> Nếu đã đủ reservation hợp lệ thì tối đa 10 thành công.
+> Không âm tồn, không giữ hoặc hoàn tồn lặp.
+> Giải thích rõ giới hạn mô phỏng trong một ứng dụng.
+>
+> Không cố tình tạo lỗi để rồi sửa.
+> Commit phù hợp theo thay đổi thực tế, ví dụ:
+> fix(concurrency): handle duplicate and stale requests
+
+## Assistant — Task 6 work record
+
+> Mình sẽ rà lại reducer, service và UI sau Task 5, tập trung vào bấm trùng, hủy
+> khi reserve đang chờ, checkout sát hạn và cleanup khi unmount. Sau đó mình sẽ
+> thêm demo 20 request trên cùng service, hiển thị kết quả thực tế và hướng dẫn
+> chụp ảnh kiểm chứng.
+>
+> Mình đã thêm trạng thái reducer riêng để hủy một reserve đang chờ: giao diện
+> không báo hủy xong sớm; nếu service đã cấp hold thì nó sẽ yêu cầu cancel rồi mới
+> trả UI về trạng thái sẵn sàng. Demo 20 request tách trong `<details>`, dùng cùng
+> service và khóa các thao tác mua trong lúc đo.
+>
+> Luồng UI đã kiểm tra trên browser: giữ hàng bằng bàn phím, tồn hiển thị giảm từ
+> 10 xuống 9, checkout thành công; cancel trả tồn về 10 và mobile không tràn ngang.
+> Mình ghi lại các quan sát này, rồi rà diff và kiểm tra cuối trước commit.
+
+- Inspected the post-Task-5 UI, reducer, service, Task 6 checklist, and project
+  rules before changing concurrency behavior.
+- Added reducer support for cancelling an in-flight reserve and ensuring a
+  granted hold is cancelled before the UI returns to an idle purchase state.
+- Added a separately disclosed 20-request demo against the existing shared
+  service, with real success/failure counts, starting/final stock, and error codes.
+- Documented the single-page-instance limit. The later Task 7 prompt requested
+  removal of screenshot requirements/results; evidence is kept as verification
+  records under `evidence/`, without requiring images.
+- Observed browser demo result: 10/20 reserve requests succeeded, 10/20 failed
+  with `SOLD_OUT`, ending at 0 available, 10 reserved, 0 sold in 7 ms. Browser
+  double-click created one hold and displayed stock 9, not 8.
+- Controlled reducer/service checks passed for pending-reserve cancellation and
+  cleanup, checkout immediately before expiry, and stale response handling.
+- `npm run typecheck`, `npm run lint`, and `npm run build` passed.
+
+## Assistant — Task 6 result
+
+Task 6 changes are committed separately before Task 7 test work.

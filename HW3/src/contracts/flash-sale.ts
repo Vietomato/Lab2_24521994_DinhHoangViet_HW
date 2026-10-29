@@ -199,6 +199,11 @@ export type ReservationState =
       readonly requestId: RequestId;
       readonly idempotencyKey: IdempotencyKey;
     }
+  | {
+      readonly status: "CANCELLING_RESERVE";
+      readonly requestId: RequestId;
+      readonly idempotencyKey: IdempotencyKey;
+    }
   | { readonly status: "RESERVED"; readonly reservation: ActiveReservation }
   | {
       readonly status: "CHECKING_OUT";

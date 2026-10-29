@@ -95,6 +95,18 @@ function isOperationActive(
   return false;
 }
 
+interface ConcurrencyDemoResult {
+  readonly succeeded: number;
+  readonly failed: number;
+  readonly startingAvailable: number;
+  readonly finalAvailable: number;
+  readonly finalReserved: number;
+  readonly finalSold: number;
+  readonly elapsedMs: number;
+  readonly failureCodes: readonly string[];
+  readonly expiresAt: number | null;
+}
+
 async function releaseOrphanedReservation(
   reservation: ActiveReservation,
 ): Promise<void> {
@@ -120,6 +132,9 @@ export default function App() {
     () => service.getSnapshot().inventory,
   );
   const [optimisticAvailableDelta, setOptimisticAvailableDelta] = useState(0);
+  const [demoRunning, setDemoRunning] = useState(false);
+  const [demoResult, setDemoResult] = useState<ConcurrencyDemoResult | null>(null);
+  const demoRunningRef = useRef(false);
 
   const remainingSaleMs = useDeadlineCountdown(SALE_ENDS_AT);
   const reservation = getReservation(state);
@@ -179,9 +194,17 @@ export default function App() {
     return () => window.clearTimeout(expiryTimeout);
   }, [reconcileInventory, remainingHoldMs, reservation, state.status, transition]);
 
+  useEffect(() => {
+    if (demoResult === null || demoResult.expiresAt === null) return;
+    const refreshDelay = Math.max(0, demoResult.expiresAt - Date.now()) + 5;
+    const refreshTimeout = window.setTimeout(reconcileInventory, refreshDelay);
+    return () => window.clearTimeout(refreshTimeout);
+  }, [demoResult, reconcileInventory]);
+
   const reserve = async (retry = false): Promise<void> => {
     const current = stateRef.current;
     if (
+      demoRunningRef.current ||
       (retry && (current.status !== "ERROR" || current.operation !== "reserve")) ||
       (!retry && current.status !== "IDLE") ||
       remainingSaleMs <= 0
@@ -215,6 +238,69 @@ export default function App() {
         return;
       }
 
+      const currentAfterResponse = stateRef.current;
+      if (
+        currentAfterResponse.status === "CANCELLING_RESERVE" &&
+        currentAfterResponse.requestId === requestId
+      ) {
+        if (!result.ok) {
+          transition({ type: "RESERVE_CANCELLED", requestId });
+          setOptimisticAvailableDelta(0);
+          reconcileInventory();
+          return;
+        }
+
+        const cleanupRequestId = nextIdentity("cancel-reserve");
+        transition({
+          type: "RESERVE_CLEANUP_STARTED",
+          requestId,
+          cleanupRequestId,
+          reservation: result.value.reservation,
+        });
+        try {
+          const cancellation = await service.cancel({
+            requestId: cleanupRequestId,
+            reservationId: result.value.reservation.id,
+            ownerId: result.value.reservation.ownerId,
+          });
+          if (!mountedRef.current) return;
+          if (!isOperationActive(stateRef.current, "cancel", cleanupRequestId)) return;
+
+          if (cancellation.ok) {
+            transition({
+              type: "CANCEL_SUCCEEDED",
+              requestId: cleanupRequestId,
+              reservation: cancellation.value.reservation,
+            });
+            setConfirmedInventory(cancellation.value.inventory);
+          } else {
+            transition({
+              type: "CANCEL_FAILED",
+              requestId: cleanupRequestId,
+              error: cancellation.error,
+            });
+            reconcileInventory();
+          }
+          setOptimisticAvailableDelta(0);
+        } catch (error) {
+          if (
+            mountedRef.current &&
+            isOperationActive(stateRef.current, "cancel", cleanupRequestId)
+          ) {
+            transition({
+              type: "CANCEL_FAILED",
+              requestId: cleanupRequestId,
+              error: unexpectedError(error),
+            });
+            reconcileInventory();
+            setOptimisticAvailableDelta(0);
+          } else if (!mountedRef.current) {
+            console.error("Reserve cleanup failed after the page was unmounted:", error);
+          }
+        }
+        return;
+      }
+
       if (!isOperationActive(stateRef.current, "reserve", requestId)) {
         if (result.ok) await releaseOrphanedReservation(result.value.reservation);
         setOptimisticAvailableDelta(0);
@@ -235,6 +321,17 @@ export default function App() {
       }
       setOptimisticAvailableDelta(0);
     } catch (error) {
+      if (
+        mountedRef.current &&
+        stateRef.current.status === "CANCELLING_RESERVE" &&
+        stateRef.current.requestId === requestId
+      ) {
+        transition({ type: "RESERVE_CANCELLED", requestId });
+        reconcileInventory();
+        setOptimisticAvailableDelta(0);
+        console.error("Reserve request failed after cancellation was requested:", error);
+        return;
+      }
       if (mountedRef.current && isOperationActive(stateRef.current, "reserve", requestId)) {
         transition({
           type: "RESERVE_FAILED",
@@ -249,8 +346,117 @@ export default function App() {
     }
   };
 
+  const requestCancelPendingReserve = (): void => {
+    const current = stateRef.current;
+    if (current.status !== "RESERVING" || demoRunningRef.current) return;
+    transition({
+      type: "RESERVE_CANCEL_REQUESTED",
+      requestId: current.requestId,
+    });
+  };
+
+  const runConcurrencyDemo = async (): Promise<void> => {
+    if (
+      demoRunningRef.current ||
+      isPending ||
+      reservation !== null ||
+      stateRef.current.status === "CANCELLING_RESERVE"
+    ) {
+      return;
+    }
+
+    demoRunningRef.current = true;
+    setDemoRunning(true);
+    setDemoResult(null);
+    const startedAt = Date.now();
+    let startingAvailable: number;
+
+    try {
+      startingAvailable = service.getSnapshot().inventory.available;
+    } catch (error) {
+      demoRunningRef.current = false;
+      setDemoRunning(false);
+      console.error("Could not start the concurrency demonstration:", error);
+      return;
+    }
+
+    const runId = nextIdentity("concurrency-demo");
+    const requests = Array.from({ length: 20 }, (_, index) => ({
+      requestId: `${runId}-request-${index + 1}`,
+      idempotencyKey: `${runId}-key-${index + 1}`,
+      ownerId: `${runId}-owner-${index + 1}`,
+      productId: PRODUCT.id,
+      quantity: 1 as const,
+    }));
+
+    try {
+      const outcomes = await Promise.allSettled(
+        requests.map((request) => service.reserve(request)),
+      );
+      let succeeded = 0;
+      let expiresAt: number | null = null;
+      const failureCodes: string[] = [];
+
+      for (const outcome of outcomes) {
+        if (outcome.status === "rejected") {
+          failureCodes.push("UNEXPECTED_ERROR");
+          console.error("Concurrency demonstration request rejected:", outcome.reason);
+        } else if (outcome.value.ok) {
+          succeeded += 1;
+          expiresAt =
+            expiresAt === null
+              ? outcome.value.value.reservation.expiresAt
+              : Math.max(expiresAt, outcome.value.value.reservation.expiresAt);
+        } else {
+          failureCodes.push(outcome.value.error.code);
+        }
+      }
+
+      const finalSnapshot = service.getSnapshot();
+      if (!mountedRef.current) return;
+      setConfirmedInventory(finalSnapshot.inventory);
+      setDemoResult({
+        succeeded,
+        failed: outcomes.length - succeeded,
+        startingAvailable,
+        finalAvailable: finalSnapshot.inventory.available,
+        finalReserved: finalSnapshot.inventory.reserved,
+        finalSold: finalSnapshot.inventory.sold,
+        elapsedMs: Date.now() - startedAt,
+        failureCodes,
+        expiresAt,
+      });
+    } catch (error) {
+      console.error("Could not complete the concurrency demonstration:", error);
+      if (mountedRef.current) {
+        let finalInventory = confirmedInventory;
+        try {
+          finalInventory = service.getSnapshot().inventory;
+        } catch (snapshotError) {
+          console.error("Could not refresh inventory after the demo failed:", snapshotError);
+        }
+        setDemoResult({
+          succeeded: 0,
+          failed: requests.length,
+          startingAvailable,
+          finalAvailable: finalInventory.available,
+          finalReserved: finalInventory.reserved,
+          finalSold: finalInventory.sold,
+          elapsedMs: Date.now() - startedAt,
+          failureCodes: ["DEMO_ERROR"],
+          expiresAt: null,
+        });
+        setConfirmedInventory(finalInventory);
+      }
+    } finally {
+      demoRunningRef.current = false;
+      if (mountedRef.current) setDemoRunning(false);
+    }
+  };
+
   const checkout = async (retry = false): Promise<void> => {
     const current = stateRef.current;
+    if (demoRunningRef.current) return;
     const canStart = current.status === "RESERVED";
     const canRetry =
       current.status === "ERROR" && current.operation === "checkout";
@@ -314,6 +520,7 @@ export default function App() {
 
   const cancel = async (retry = false): Promise<void> => {
     const current = stateRef.current;
+    if (demoRunningRef.current) return;
     const canStart = current.status === "RESERVED";
     const canRetry = current.status === "ERROR" && current.operation === "cancel";
     if ((!retry && !canStart) || (retry && !canRetry)) return;
@@ -387,16 +594,19 @@ export default function App() {
 
   const isPending =
     state.status === "RESERVING" ||
+    state.status === "CANCELLING_RESERVE" ||
     state.status === "CHECKING_OUT" ||
     state.status === "CANCELLING";
   const reserveDisabled =
-    isPending || remainingSaleMs <= 0 || displayedAvailable <= 0;
+    isPending || demoRunning || remainingSaleMs <= 0 || displayedAvailable <= 0;
   const statusMessage = (() => {
     switch (state.status) {
       case "IDLE":
         return "Sẵn sàng giữ sản phẩm.";
       case "RESERVING":
         return "Đang xác nhận yêu cầu giữ hàng…";
+      case "CANCELLING_RESERVE":
+        return "Đang chờ kết quả để hủy yêu cầu giữ hàng; nếu đã cấp, hold sẽ được hủy.";
       case "RESERVED":
         return "Sản phẩm đã được giữ cho bạn.";
       case "CHECKING_OUT":
@@ -502,9 +712,25 @@ export default function App() {
             )}
 
             {state.status === "RESERVING" && (
+              <div className="pending-reserve-actions">
+                <button className="primary-button" type="button" disabled>
+                  <span className="spinner" aria-hidden="true" />
+                  Đang giữ hàng…
+                </button>
+                <button
+                  className="text-button"
+                  type="button"
+                  onClick={requestCancelPendingReserve}
+                >
+                  Hủy yêu cầu đang chờ
+                </button>
+              </div>
+            )}
+
+            {state.status === "CANCELLING_RESERVE" && (
               <button className="primary-button" type="button" disabled>
                 <span className="spinner" aria-hidden="true" />
-                Đang giữ hàng…
+                Đang hủy yêu cầu giữ hàng…
               </button>
             )}
 
@@ -528,7 +754,7 @@ export default function App() {
                   <button
                     className="primary-button"
                     type="button"
-                    disabled={state.status !== "RESERVED"}
+                    disabled={state.status !== "RESERVED" || demoRunning}
                     onClick={() => void checkout()}
                   >
                     {state.status === "CHECKING_OUT" ? "Đang thanh toán…" : "Checkout"}
@@ -536,7 +762,7 @@ export default function App() {
                   <button
                     className="secondary-button"
                     type="button"
-                    disabled={state.status !== "RESERVED"}
+                    disabled={state.status !== "RESERVED" || demoRunning}
                     onClick={() => void cancel()}
                   >
                     {state.status === "CANCELLING" ? "Đang hủy…" : "Hủy giữ hàng"}
@@ -595,6 +821,42 @@ export default function App() {
           </div>
         </div>
       </section>
+
+      <details className="concurrency-demo">
+        <summary>Kiểm thử 20 yêu cầu giữ hàng đồng thời</summary>
+        <p>
+          Gửi 20 request độc lập tới cùng mock service đang quản lý tồn kho.
+          Demo không dùng mạng hoặc dữ liệu ngẫu nhiên; các hold thành công vẫn
+          chiếm tồn trong 30 giây rồi tự hết hạn.
+        </p>
+        <button
+          className="secondary-button"
+          type="button"
+          disabled={demoRunning || isPending || reservation !== null}
+          onClick={() => void runConcurrencyDemo()}
+        >
+          {demoRunning ? "Đang chạy 20 request…" : "Chạy kiểm thử đồng thời"}
+        </button>
+        {demoResult !== null && (
+          <div className="demo-result" role="status" aria-live="polite">
+            <strong>Kết quả thực tế</strong>
+            <span>
+              Thành công: {demoResult.succeeded}/20 · Thất bại: {demoResult.failed}/20
+            </span>
+            <span>
+              Tồn đầu: {demoResult.startingAvailable} · Tồn cuối: {demoResult.finalAvailable}
+              {" · "}Đang giữ: {demoResult.finalReserved} · Đã bán: {demoResult.finalSold}
+            </span>
+            <span>Thời gian đo: {demoResult.elapsedMs} ms</span>
+            {demoResult.failureCodes.length > 0 && (
+              <span>Mã lỗi: {demoResult.failureCodes.join(", ")}</span>
+            )}
+            {demoResult.succeeded > Math.min(20, demoResult.startingAvailable) && (
+              <span className="status-error">Invariant lỗi: số cấp vượt tồn đầu kỳ.</span>
+            )}
+          </div>
+        )}
+      </details>
 
       <footer className="page-footer">
         <span>Demo mô phỏng flash sale</span>

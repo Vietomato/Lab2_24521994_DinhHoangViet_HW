@@ -469,6 +469,57 @@
   font-size: 11px;
 }
 
+.pending-reserve-actions {
+  display: grid;
+  gap: 5px;
+}
+
+.concurrency-demo {
+  margin-top: 24px;
+  padding: 18px 20px;
+  border: 1px solid #e0e7dc;
+  border-radius: 15px;
+  background: #fff;
+}
+
+.concurrency-demo summary {
+  color: #294834;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.concurrency-demo p {
+  max-width: 760px;
+  margin: 12px 0;
+  color: #758076;
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.concurrency-demo > .secondary-button {
+  min-height: 40px;
+  font-size: 12px;
+}
+
+.demo-result {
+  display: grid;
+  gap: 6px;
+  margin-top: 14px;
+  padding: 13px 15px;
+  border-left: 3px solid #83b74e;
+  border-radius: 4px 10px 10px 4px;
+  background: #f5f9f1;
+  color: #657367;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.demo-result strong {
+  color: #294834;
+  font-size: 13px;
+}
+
 @media (max-width: 760px) {
   .page-shell {
     width: min(100% - 28px, 560px);
