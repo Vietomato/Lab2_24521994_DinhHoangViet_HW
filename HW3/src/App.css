@@ -1,0 +1,610 @@
+#root {
+  min-height: 100vh;
+}
+
+.page-shell {
+  width: min(1120px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 26px 0 30px;
+}
+
+.site-header,
+.brand,
+.sale-banner,
+.price-row,
+.inventory-card,
+.hold-heading,
+.button-row,
+.page-footer {
+  display: flex;
+  align-items: center;
+}
+
+.site-header {
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.brand {
+  gap: 10px;
+  color: #163f30;
+  font-family: Manrope, "Segoe UI", sans-serif;
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  text-decoration: none;
+}
+
+.brand-mark {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 11px;
+  background: #c9ef81;
+  color: #163f30;
+  font-size: 18px;
+}
+
+.demo-badge,
+.discount-tag {
+  border-radius: 999px;
+  background: #edf4e5;
+  color: #456b37;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.demo-badge {
+  padding: 8px 13px;
+}
+
+.sale-banner {
+  min-height: 166px;
+  justify-content: space-between;
+  gap: 28px;
+  padding: 30px 38px;
+  border-radius: 22px;
+  background: #194533;
+  color: #fff;
+}
+
+.eyebrow {
+  margin: 0 0 11px;
+  color: #6b8a78;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+}
+
+.sale-banner .eyebrow {
+  color: #c9ef81;
+}
+
+.sale-banner h1 {
+  margin: 0;
+  font-family: Manrope, "Segoe UI", sans-serif;
+  font-size: clamp(24px, 3.2vw, 36px);
+  letter-spacing: -1.2px;
+}
+
+.sale-banner p:last-child {
+  margin: 8px 0 0;
+  color: #d3e2d9;
+  font-size: 14px;
+}
+
+.sale-clock {
+  display: grid;
+  min-width: 164px;
+  gap: 5px;
+  padding: 13px 17px;
+  border: 1px solid rgb(255 255 255 / 20%);
+  border-radius: 14px;
+  background: rgb(255 255 255 / 7%);
+  text-align: center;
+}
+
+.sale-clock span,
+.hold-time span,
+.inventory-label {
+  color: #d2e3d8;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.sale-clock strong {
+  color: #d1f58f;
+  font-family: Manrope, "Segoe UI", sans-serif;
+  font-size: 29px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 1px;
+}
+
+.product-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.95fr);
+  gap: 52px;
+  align-items: center;
+  padding: 42px 44px 48px;
+  border: 1px solid #e8ebe6;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 16px 50px rgb(34 55 42 / 5%);
+}
+
+.product-art {
+  position: relative;
+  display: grid;
+  min-height: 410px;
+  overflow: hidden;
+  place-items: center;
+  border-radius: 18px;
+  background:
+    radial-gradient(ellipse at 50% 62%, rgb(215 243 171 / 48%), transparent 48%),
+    linear-gradient(145deg, #f3f6ef, #e8eee5);
+}
+
+.product-orbit {
+  position: absolute;
+  width: 270px;
+  height: 270px;
+  border: 1px solid rgb(47 97 66 / 13%);
+  border-radius: 50%;
+}
+
+.orbit-one {
+  transform: scale(1.25);
+}
+
+.orbit-two {
+  transform: scale(1.62);
+}
+
+.headphone {
+  position: relative;
+  width: 207px;
+  height: 230px;
+  transform: rotate(-8deg);
+  filter: drop-shadow(0 22px 18px rgb(31 50 39 / 20%));
+}
+
+.headband {
+  position: absolute;
+  top: 12px;
+  left: 21px;
+  width: 165px;
+  height: 175px;
+  border: 24px solid #253a30;
+  border-bottom-color: transparent;
+  border-radius: 100px 100px 0 0;
+}
+
+.earcup {
+  position: absolute;
+  z-index: 1;
+  top: 125px;
+  width: 62px;
+  height: 93px;
+  border: 8px solid #1b2b23;
+  border-radius: 25px;
+  background: linear-gradient(110deg, #526d5b, #263d30 62%);
+}
+
+.earcup-left {
+  left: 3px;
+  transform: rotate(4deg);
+}
+
+.earcup-right {
+  right: 3px;
+  transform: rotate(-4deg);
+}
+
+.art-caption {
+  position: absolute;
+  right: 18px;
+  bottom: 17px;
+  color: #7d9183;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  line-height: 1.5;
+  text-align: right;
+}
+
+.product-panel {
+  max-width: 440px;
+}
+
+.product-panel h2 {
+  margin: 0;
+  color: #1b2e23;
+  font-family: Manrope, "Segoe UI", sans-serif;
+  font-size: clamp(25px, 3vw, 34px);
+  letter-spacing: -1.3px;
+  line-height: 1.2;
+}
+
+.product-description {
+  max-width: 390px;
+  margin: 12px 0 20px;
+  color: #778078;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.price-row {
+  gap: 11px;
+  margin-bottom: 22px;
+}
+
+.price-row strong {
+  color: #1b4933;
+  font-family: Manrope, "Segoe UI", sans-serif;
+  font-size: 27px;
+  letter-spacing: -0.7px;
+}
+
+.discount-tag {
+  padding: 6px 10px;
+}
+
+.inventory-card {
+  position: relative;
+  display: block;
+  padding: 14px 16px 12px;
+  border: 1px solid #e6ece4;
+  border-radius: 13px;
+  background: #fafcf9;
+}
+
+.inventory-label {
+  display: block;
+  margin-bottom: 4px;
+  color: #748075;
+}
+
+.inventory-number {
+  margin-right: 7px;
+  color: #254c35;
+  font-family: Manrope, "Segoe UI", sans-serif;
+  font-size: 22px;
+}
+
+.inventory-unit {
+  color: #838b83;
+  font-size: 12px;
+}
+
+.stock-track {
+  height: 6px;
+  margin-top: 10px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: #e8eee7;
+}
+
+.stock-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #83b74e;
+  transition: width 180ms ease;
+}
+
+.inventory-note {
+  margin: 7px 0 0;
+  color: #8a928a;
+  font-size: 11px;
+}
+
+.reservation-area {
+  margin-top: 18px;
+}
+
+.primary-button,
+.secondary-button {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: 0;
+  border-radius: 11px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  transition: background 150ms ease, transform 150ms ease;
+}
+
+.primary-button {
+  width: 100%;
+  padding: 0 18px;
+  background: #244e36;
+  color: #fff;
+}
+
+.primary-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: #1b402b;
+}
+
+.primary-button:disabled {
+  background: #a7b2a7;
+  color: #f7f8f6;
+}
+
+.secondary-button {
+  padding: 0 16px;
+  border: 1px solid #dce4dc;
+  background: #fff;
+  color: #375341;
+}
+
+.secondary-button:hover:not(:disabled) {
+  background: #f2f6ef;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgb(255 255 255 / 45%);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 750ms linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.hold-card {
+  padding: 15px;
+  border: 1px solid #dce9d5;
+  border-radius: 14px;
+  background: #f7fbf3;
+}
+
+.hold-heading {
+  gap: 10px;
+}
+
+.hold-indicator {
+  width: 10px;
+  height: 10px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #80ae4c;
+  box-shadow: 0 0 0 4px #e6f1db;
+}
+
+.hold-heading div {
+  display: grid;
+  gap: 3px;
+}
+
+.hold-heading strong {
+  color: #294834;
+  font-size: 13px;
+}
+
+.hold-heading span:not(.hold-indicator) {
+  color: #788579;
+  font-size: 11px;
+}
+
+.hold-time {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 16px 0 12px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  background: #eaf3e3;
+}
+
+.hold-time span {
+  color: #687967;
+}
+
+.hold-time strong {
+  color: #285038;
+  font-family: Manrope, "Segoe UI", sans-serif;
+  font-size: 20px;
+  font-variant-numeric: tabular-nums;
+}
+
+.button-row {
+  gap: 9px;
+}
+
+.button-row .primary-button {
+  flex: 1;
+}
+
+.button-row .secondary-button {
+  flex: 0 0 auto;
+}
+
+.retry-row {
+  margin-top: 8px;
+  text-align: center;
+}
+
+.text-button {
+  padding: 6px 10px;
+  border: 0;
+  background: transparent;
+  color: #376344;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.error-actions,
+.reset-button {
+  margin-top: 10px;
+}
+
+.status-message {
+  min-height: 20px;
+  margin-top: 12px;
+  color: #718074;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.status-error {
+  color: #a13d31;
+}
+
+.page-footer {
+  justify-content: space-between;
+  padding: 18px 4px 0;
+  color: #899189;
+  font-size: 11px;
+}
+
+.pending-reserve-actions {
+  display: grid;
+  gap: 5px;
+}
+
+.concurrency-demo {
+  margin-top: 24px;
+  padding: 18px 20px;
+  border: 1px solid #e0e7dc;
+  border-radius: 15px;
+  background: #fff;
+}
+
+.concurrency-demo summary {
+  color: #294834;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.concurrency-demo p {
+  max-width: 760px;
+  margin: 12px 0;
+  color: #758076;
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.concurrency-demo > .secondary-button {
+  min-height: 40px;
+  font-size: 12px;
+}
+
+.demo-result {
+  display: grid;
+  gap: 6px;
+  margin-top: 14px;
+  padding: 13px 15px;
+  border-left: 3px solid #83b74e;
+  border-radius: 4px 10px 10px 4px;
+  background: #f5f9f1;
+  color: #657367;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.demo-result strong {
+  color: #294834;
+  font-size: 13px;
+}
+
+@media (max-width: 760px) {
+  .page-shell {
+    width: min(100% - 28px, 560px);
+    padding-top: 17px;
+  }
+
+  .site-header {
+    margin-bottom: 17px;
+  }
+
+  .sale-banner {
+    min-height: unset;
+    align-items: flex-start;
+    padding: 24px 20px;
+  }
+
+  .sale-clock {
+    min-width: 116px;
+    padding: 10px;
+  }
+
+  .sale-clock span {
+    font-size: 8px;
+  }
+
+  .sale-clock strong {
+    font-size: 23px;
+  }
+
+  .product-layout {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 18px;
+  }
+
+  .product-art {
+    min-height: 300px;
+  }
+
+  .product-panel {
+    max-width: none;
+    padding: 0 2px 4px;
+  }
+}
+
+@media (max-width: 460px) {
+  .sale-banner {
+    flex-direction: column;
+    gap: 17px;
+  }
+
+  .sale-clock {
+    width: 100%;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    text-align: left;
+  }
+
+  .sale-clock strong {
+    font-size: 21px;
+  }
+
+  .button-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .button-row .secondary-button {
+    width: 100%;
+  }
+
+  .page-footer {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 5px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
