@@ -48,7 +48,7 @@ Invariants: (1) exactly one cell has `tabIndex=0` (roving tabindex); (2) `aria-s
 - [X] **4.1** Contrast check all tokens ≥ 4.5:1 (text) / 3:1 (UI); `:focus-visible` ring — `style(a11y): contrast and focus`
 - [ ] **4.2** Screen-reader pass (NVDA/VoiceOver): record notes in `/evidence/sr-notes.md`
 - [ ] **4.3** Lighthouse run → 100/100, save report — `docs(evidence): lighthouse report`
-- [ ] **4.4** Fill `AI_FAILURE_AUDIT.md` (≥ 3) — `docs(audit): add AI failure audit`
+- [X] **4.4** Fill `AI_FAILURE_AUDIT.md` (≥ 3) — `docs(audit): add AI failure audit`
 
 ## 3. Verification Checklist (Stage 4)
 | Check | Tool | Pass criteria | Evidence |
