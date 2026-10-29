@@ -366,3 +366,34 @@ Task 6 changes are committed separately before Task 7 test work.
 
 Task 7 tests and evidence are complete. Changes are ready for the requested
 `test(hw3): verify sale invariants` commit.
+
+## User — Follow-up browser evidence request
+
+> bạn có thể chụp luôn bằng chứng dc k(k bỏ vào prompt log)
+
+## Assistant — Browser evidence captured (2026-10-29)
+
+Opened the running HW3 app at `http://127.0.0.1:5187/` and captured genuine
+browser screenshots into `evidence/`. The narrow page viewport reported
+317 × 618 CSS pixels.
+
+- Reservation: after clicking **Giữ sản phẩm**, the page showed stock 9,
+  reservation `reservation-1`, and an active 30-second hold countdown.
+  ![Observed reservation with stock, reservation ID, and hold countdown](evidence/image/reservation-state.png)
+- Cancellation: after clicking **Hủy giữ hàng**, the app returned to idle and
+  displayed the restored stock of 10.
+  ![Observed cancellation with stock restored to 10](evidence/image/cancellation-restored-stock.png)
+- Concurrency: from 10 available units, the actual 20-request UI demo reported
+  10 successes and 10 `SOLD_OUT` failures; final inventory was 0 available,
+  10 reserved, 0 sold, measured in 8 ms. These successful holds remain in the
+  in-memory service until expiry.
+  ![Observed 20-request concurrency result](evidence/image/concurrency-20-requests.png)
+- Checkout: after reloading to start a fresh in-memory sale, reserve and checkout
+  completed; the UI announced order `order-1` and showed 9 available units.
+  ![Observed successful checkout for order-1](evidence/image/checkout-success.png)
+
+These are live browser observations, not screenshots reconstructed from the
+earlier run. The previously recorded historical test results remain separate.
+Raw initial compiler/linter/test failure outputs are still unavailable; the
+AI audit records those gaps rather than presenting these new screenshots as
+historical failure evidence.

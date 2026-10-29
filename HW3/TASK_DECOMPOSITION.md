@@ -115,7 +115,7 @@ Commit: test(hw3): verify sale invariants
 Task 8 — Evidence and Documentation
 - [X] Update README.md to match the final source, scripts, and limitations.
 - [X] Write a short REPORT.md explaining architecture, deadline timing, state transitions, inventory behavior, and verification.
-- [X] Retain the supplied textual evidence under evidence/ and document missing screenshots/raw diagnostics with capture instructions; do not claim they exist.
+- [X] Retain supplied textual evidence, capture live browser screenshots under evidence/, and document missing raw historical diagnostics without fabricating them.
 - [X] Document at least three actually observed AI flaws in AI_FAILURE_AUDIT.md.
 - [X] Include prompt, recorded failure, risk, evidence, correction, and verification outcome for each audit entry; identify unavailable raw output.
 - [X] Separate expected outcomes from observed outcomes.

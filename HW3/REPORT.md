@@ -44,6 +44,6 @@ task did not rerun them.
 
 The mock has no backend, persistence, real identity/payment, or cross-tab/process
 coordination. It does not establish production-grade distributed concurrency,
-and browser timing is not server-authoritative. Existing evidence is primarily
-textual; missing screenshots/raw historical diagnostics are identified, with
-capture steps, in [`evidence/task8-evidence-guide.md`](./evidence/task8-evidence-guide.md).
+and browser timing is not server-authoritative. Textual evidence and live browser
+screenshots are available; missing raw historical diagnostics are identified in
+[`evidence/task8-evidence-guide.md`](./evidence/task8-evidence-guide.md).
