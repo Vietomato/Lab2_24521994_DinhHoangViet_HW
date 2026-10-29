@@ -75,15 +75,15 @@ Verify: normal reserve/cancel/checkout; duplicate requests; sold-out behavior; e
 
 Commit: feat(service): implement inventory simulation
 Task 5 — Accessible UI Integration
-- [ ] Connect the existing countdown, reducer, and service.
-- [ ] Display product, available stock, sale countdown, reservation countdown, and operation status.
-- [ ] Provide reserve, checkout, cancel, and appropriate retry controls.
-- [ ] Implement optimistic display updates with explicit reconciliation and rollback.
-- [ ] Keep optimistic display values separate from authoritative service inventory.
-- [ ] Avoid duplicate stock deductions or releases during reconciliation.
-- [ ] Provide semantic buttons, labels, visible focus, and useful status/error text.
-- [ ] Disable invalid actions without relying on disabled buttons for service correctness.
-- [ ] Keep lifecycle setup/cleanup compatible with React StrictMode.
+- [X] Connect the existing countdown, reducer, and service.
+- [X] Display product, available stock, sale countdown, reservation countdown, and operation status.
+- [X] Provide reserve, checkout, cancel, and appropriate retry controls.
+- [X] Implement optimistic display updates with explicit reconciliation and rollback.
+- [X] Keep optimistic display values separate from authoritative service inventory.
+- [X] Avoid duplicate stock deductions or releases during reconciliation.
+- [X] Provide semantic buttons, labels, visible focus, and useful status/error text.
+- [X] Disable invalid actions without relying on disabled buttons for service correctness.
+- [X] Keep lifecycle setup/cleanup compatible with React StrictMode.
 Verify: the complete flow works with mouse and keyboard; pending/error states are visible; failed requests roll back correctly.
 
 Commit: feat(ui): integrate flash sale flow

@@ -1,6 +1,6 @@
 # Copilot IDE Prompt Log
 
-Conversation log for Task 2 through Task 4, including user prompts, assistant
+Conversation log for Task 2 through Task 5, including user prompts, assistant
 responses, and a concise record of the workflow and verification. Times are local
 to the conversation where available. Tool activity is summarized rather than
 reproduced command-by-command.
@@ -195,3 +195,55 @@ Committed the lifecycle reducer with the requested message:
 The Task 4 implementation was committed first. This log entry was finalized in
 a follow-up documentation-only commit so the log could include the verified
 commit ID and final response.
+
+## User — Task 5
+
+> Làm task 5: tích hợp UI với countdown, reducer và mock service.
+>
+> Hiển thị sản phẩm, tồn kho, countdown sale,
+> nút giữ hàng, thời gian giữ còn lại, checkout và hủy.
+> Hiển thị loading, success, expired và lỗi rõ ràng.
+> Khóa thao tác không hợp lệ; dùng semantic HTML và focus rõ.
+>
+> Có optimistic UI update và rollback khi request thất bại.
+> Tách số tồn hiển thị tạm khỏi tồn được service xác nhận,
+> tránh trừ hoặc hoàn tồn hai lần.
+> Cleanup đúng khi unmount và hoạt động với React StrictMode.
+>
+> Commit: feat(ui): integrate flash sale flow
+
+## Assistant — Task 5 work record
+
+> Mình sẽ xem cấu trúc UI hiện tại, contracts/service và yêu cầu Task 5 trước khi
+> nối các phần. Sau đó sẽ triển khai giao diện, quản lý vòng đời request khi
+> unmount/StrictMode và kiểm tra đầy đủ các trạng thái tương tác.
+>
+> UI sẽ dùng service singleton để giữ một kho authoritative trong phiên, còn số
+> tồn optimistic là delta riêng và chỉ được reconcile bằng snapshot service. Khi
+> component unmount, request reserve trả muộn sẽ được hủy nếu đã tạo hold;
+> `pagehide` dọn service timer mà không làm hỏng chu kỳ cleanup/setup của
+> StrictMode.
+
+- Read the existing UI entry, contracts, reducer, countdown hook, service, and
+  Task 5 checklist before replacing the startup page.
+- Replaced the startup page with a responsive flash-sale product UI. Connected
+  sale/hold countdowns, lifecycle reducer, and a shared mock service; added
+  reserve, checkout, cancel, appropriate retry controls, status/error feedback,
+  and semantic keyboard-operable controls with visible focus.
+- Kept optimistic available-stock delta separate from the service snapshot.
+  Receipts reconcile successful actions; failed requests refresh authoritative
+  inventory and clear the temporary delta.
+- Kept the shared service outside the component so StrictMode effect
+  cleanup/setup does not dispose it. Unmounted UI ignores late results and
+  cancels a late successful reservation. Hook timers/listeners clean up on
+  unmount; service expiry timers dispose on `pagehide`.
+- Browser verification observed: reserve via keyboard changed displayed stock
+  from 10 to 9, checkout announced a successful order, cancellation restored
+  displayed stock to 10, and the 375px viewport had no horizontal overflow.
+- `npm run typecheck`, `npm run lint`, and `npm run build` passed. A lint failure
+  initially identified synchronous state updates in the expiry effect; moving
+  that work to a cleanup-managed timeout resolved it.
+
+## Assistant — Task 5 result
+
+Pending commit result.
