@@ -38,13 +38,13 @@ Verify: typecheck, lint, and build pass; the startup page opens.
 
 Commit: chore(hw3): initialize project and contracts
 Task 2 — Deadline Countdown
-- [ ] Implement a pure remaining-time calculation and its scheduling adapter/hook.
-- [ ] Calculate Math.max(0, endTime - now) on every update.
-- [ ] Do not subtract a fixed amount from previous state on each callback.
-- [ ] Handle expired deadlines, changed deadlines, delayed callbacks, and disposal.
-- [ ] Recalculate when the page becomes visible again.
-- [ ] Avoid unnecessary per-frame React state updates.
-- [ ] Allow clock injection for later deterministic tests.
+- [X] Implement a pure remaining-time calculation and its scheduling adapter/hook.
+- [X] Calculate Math.max(0, endTime - now) on every update.
+- [X] Do not subtract a fixed amount from previous state on each callback.
+- [X] Handle expired deadlines, changed deadlines, delayed callbacks, and disposal.
+- [X] Recalculate when the page becomes visible again.
+- [X] Avoid unnecessary per-frame React state updates.
+- [X] Allow clock injection for later deterministic tests.
 Verify: a delayed callback catches up to the deadline; the countdown reaches zero without negative output; cleanup prevents additional updates.
 
 Commit: feat(timer): implement deadline countdown
