@@ -49,12 +49,12 @@ Verify: a delayed callback catches up to the deadline; the countdown reaches zer
 
 Commit: feat(timer): implement deadline countdown
 Task 3 — Reservation State Machine
-- [ ] Implement a pure reducer using the established discriminated union.
-- [ ] Cover IDLE, RESERVING, RESERVED, CHECKING_OUT, SUCCESS, EXPIRED, and ERROR, with explicit cancellation behavior.
-- [ ] Specify permitted events and transitions, including retry and checkout failure.
-- [ ] Carry requestId, reservationId, and expiresAt where appropriate.
-- [ ] Ignore stale responses that do not belong to the current operation.
-- [ ] Keep service calls, timers, and other side effects outside the reducer.
+- [X] Implement a pure reducer using the established discriminated union.
+- [X] Cover IDLE, RESERVING, RESERVED, CHECKING_OUT, SUCCESS, EXPIRED, and ERROR, with explicit cancellation behavior.
+- [X] Specify permitted events and transitions, including retry and checkout failure.
+- [X] Carry requestId, reservationId, and expiresAt where appropriate.
+- [X] Ignore stale responses that do not belong to the current operation.
+- [X] Keep service calls, timers, and other side effects outside the reducer.
 Verify: normal reservation/checkout flow, failure recovery, cancellation, expiry, and stale-event rejection using example event sequences.
 
 Commit: feat(state): implement reservation lifecycle
