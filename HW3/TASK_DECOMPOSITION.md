@@ -100,16 +100,16 @@ Verify: at most 10 reservations succeed while none expire or are released during
 Suggested commit: fix(concurrency): handle duplicate and stale requests
 Use feat or refactor instead if that accurately describes the actual changes.
 Task 7 — Automated Verification
-- [ ] Add the minimum necessary test runner/configuration.
-- [ ] Test deadline calculations, delayed callbacks, zero, deadline changes, and cleanup.
-- [ ] Test valid/invalid state transitions and stale request events.
-- [ ] Test overlapping reservations and stock conservation.
-- [ ] Test duplicate cancel, expiry, reserve, and checkout requests.
-- [ ] Test exact expiry boundaries and checkout competing with expiry.
-- [ ] Test failure recovery, rollback, and late results after disposal/unmount.
-- [ ] Use fake/injected clocks and controlled promises; avoid real 30-second waits, uncontrolled randomness, and network dependencies.
-- [ ] If a test finds a defect, report the failure and correction explicitly.
-Verify: tests, typecheck, lint, and build pass; manually check the actual browser flow as well.
+- [X] Add the minimum necessary test runner/configuration.
+- [X] Test deadline calculations, delayed callbacks, zero, deadline changes, and cleanup.
+- [X] Test valid/invalid state transitions and stale request events.
+- [X] Test overlapping reservations and stock conservation.
+- [X] Test duplicate cancel, expiry, reserve, and checkout requests.
+- [X] Test exact expiry boundaries and checkout competing with expiry.
+- [X] Test failure recovery, optimistic rollback, and late results after unmount.
+- [X] Use fake/injected clocks and controlled promises; avoid real 30-second waits, uncontrolled randomness, and network dependencies.
+- [X] Report the initial test assertion correction; no implementation defect was found.
+Verify: automated tests, typecheck, lint, and build pass; Task 6's browser run separately verified the user flow.
 
 Commit: test(hw3): verify sale invariants
 Task 8 — Evidence and Documentation
@@ -124,15 +124,15 @@ Verify: every completion claim is supported by source inspection or recorded exe
 
 Commit: docs(hw3): add evidence and AI failure audit
 4. Evidence Plan
-Evidence	What to capture
-Reservation	UI with confirmed reservation, ID, stock, and remaining hold time
-Expiry/cancellation	Before/after stock and reservation state; show release occurs only once
-Checkout	Successful order and a repeated request that does not create another order
+Evidence	What to record under evidence/
+Reservation	Observed UI state with reservation ID, stock, and remaining hold time
+Expiry/cancellation	Test result showing stock is released only once
+Checkout	Result showing an idempotent retry returns the same order
 Concurrency	Controlled test/demo output: requests, successes, failures, and final inventory
-Countdown	Recording or clock-controlled test showing correction after callback delay
-Quality checks	Actual tests, typecheck, lint, and build output
-AI audit	Actual faulty output, failure evidence, correction, and retest
+Countdown	Clock-controlled test showing correction after a delayed callback
+Quality checks	Actual test, typecheck, lint, and build results
+AI audit	Observed faulty output, failure evidence, correction, and retest
 Git	git log --oneline showing meaningful task commits
 
 
-Screenshots alone do not prove atomicity or timing correctness. Pair them with repeatable tests and explain the single-process simulation boundary.
+Evidence records and controlled tests substantiate timing and atomicity claims; document the single-process simulation boundary.

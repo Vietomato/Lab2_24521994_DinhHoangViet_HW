@@ -1,6 +1,6 @@
 # Copilot IDE Prompt Log
 
-Conversation log for Task 2 through Task 6, including user prompts, assistant
+Conversation log for Task 2 through Task 7, including user prompts, assistant
 responses, and a concise record of the workflow and verification. Times are local
 to the conversation where available. Tool activity is summarized rather than
 reproduced command-by-command.
@@ -286,8 +286,7 @@ documentation-only commit.
 
 > Mình sẽ rà lại reducer, service và UI sau Task 5, tập trung vào bấm trùng, hủy
 > khi reserve đang chờ, checkout sát hạn và cleanup khi unmount. Sau đó mình sẽ
-> thêm demo 20 request trên cùng service, hiển thị kết quả thực tế và hướng dẫn
-> chụp ảnh kiểm chứng.
+> thêm demo 20 request trên cùng service và hiển thị kết quả kiểm chứng thực tế.
 >
 > Mình đã thêm trạng thái reducer riêng để hủy một reserve đang chờ: giao diện
 > không báo hủy xong sớm; nếu service đã cấp hold thì nó sẽ yêu cầu cancel rồi mới
@@ -317,3 +316,53 @@ documentation-only commit.
 ## Assistant — Task 6 result
 
 Task 6 changes are committed separately before Task 7 test work.
+
+## User — Task 7
+
+> Làm task 7: viết tests từ code thực tế tôi cung cấp.
+>
+> Kiểm tra:
+> - Countdown theo deadline, callback trễ và thời gian về 0.
+> - Chuyển trạng thái hợp lệ, event/response cũ.
+> - 20 yêu cầu reserve với tồn 10.
+> - Cancel và expiry hoàn tồn đúng một lần.
+> - Checkout lặp không tạo thêm đơn.
+> - Checkout cạnh tranh với expiry.
+> - Rollback sau lỗi và cleanup.
+>
+> Dùng fake clock, deferred promises hoặc delay kiểm soát được.
+> Không chờ 30 giây thật, không phụ thuộc random.
+> Chỉ thêm test runner tối thiểu nếu cần.
+> Không âm thầm sửa implementation để tests pass.
+>
+> Commit: test(hw3): verify sale invariants
+>
+> Sửa prompt Task 6 để bỏ yêu cầu và kết quả chụp ảnh; lưu kiểm chứng trong
+> `HW3/evidence/` (không yêu cầu ảnh).
+
+## Assistant — Task 7 work record
+
+- Added Vitest and jsdom as the test runner/environment, plus a `test` script.
+- Added tests against the actual countdown helper/hook, reducer, and mock service.
+  The service tests use injected clocks, synchronous atomic commits, controlled
+  deferred delays, and a captured scheduler; none wait for the real 30-second
+  hold or use randomness/network access.
+- Added React/jsdom integration tests with the actual mock service factory and
+  injected dependencies. They verify the optimistic stock value while reserve
+  is pending, rollback after an injected failure, and cancellation of a granted
+  reservation that returns after StrictMode unmount.
+- The first test run exposed an incorrect test expectation: idempotent checkout
+  correctly returns the same order but retains each attempt's `requestId`.
+  Corrected the assertion to compare order identity; no application
+  implementation change was made for this assertion.
+- Updated the Task 6 prompt record and evidence guidance to remove screenshots;
+  Task 6 verification remains recorded in `evidence/`.
+- Final validation: `npm test` passed (4 files, 18 tests); `npm run lint` passed;
+  `npm run build` passed, including type-checking the source and tests.
+- Added `evidence/task7-test-results.md` with the actual results and the
+  corrected test-only assertion.
+
+## Assistant — Task 7 result
+
+Task 7 tests and evidence are complete. Changes are ready for the requested
+`test(hw3): verify sale invariants` commit.
