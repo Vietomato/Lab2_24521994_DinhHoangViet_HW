@@ -246,4 +246,19 @@ commit ID and final response.
 
 ## Assistant — Task 5 result
 
-Pending commit result.
+> Đã tích hợp UI flash sale với countdown, reducer và mock service. Giao diện
+> hiển thị sản phẩm, tồn kho, thời gian sale/giữ hàng; hỗ trợ giữ, hủy,
+> checkout và retry cùng trạng thái loading/success/expired/error.
+>
+> Số tồn optimistic được giữ riêng với snapshot authoritative và được reconcile
+> sau thành công hoặc rollback sau lỗi. UI dùng semantic controls, focus rõ, xử
+> lý response muộn sau unmount và giữ service tương thích React StrictMode.
+>
+> Typecheck, lint, build đều đạt. Browser kiểm tra reserve bằng bàn phím, tồn
+> giảm từ 10 xuống 9, cancel hoàn về 10, checkout thành công và viewport 375px
+> không tràn ngang.
+>
+> Commit `78973a9` — `feat(ui): integrate flash sale flow`.
+
+The prompt log was finalized after the implementation commit in a follow-up
+documentation-only commit.
