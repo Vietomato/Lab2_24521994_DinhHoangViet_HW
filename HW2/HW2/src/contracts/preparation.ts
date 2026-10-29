@@ -9,7 +9,12 @@ export type PreparationStatus =
   | "queued"
   | "loading"
   | "ready"
-  | "error";
+  | "error"
+  | "cancelled";
+
+export type PreparationCancellationReason =
+  | "user"
+  | "queue-disposed";
 
 export type PreparationOutcome =
   | {
@@ -20,13 +25,18 @@ export type PreparationOutcome =
       readonly status: "error";
       readonly taskId: string;
       readonly error: Error;
+    }
+  | {
+      readonly status: "cancelled";
+      readonly taskId: string;
+      readonly reason: PreparationCancellationReason;
     };
 
 export interface PreparationHandle {
   readonly id: string;
-
-  // Resolve đúng một lần khi chuẩn bị thành công hoặc thất bại.
   readonly prepared: Promise<PreparationOutcome>;
+
+  cancel(): boolean;
 }
 
 export interface PreparedTrack {
@@ -37,7 +47,9 @@ export interface PreparedTrack {
 }
 
 export interface PreparationSnapshot {
+  readonly disposed: boolean;
   readonly activePreparations: number;
+
   readonly tasks: readonly {
     readonly id: string;
     readonly track: PreparationTrack;
@@ -51,18 +63,22 @@ export interface PreparationSnapshot {
 export interface PreparationDependencies {
   readonly engine: Pick<AudioEngine, "decode">;
 
-  // Cho phép thay bằng fetch giả khi kiểm tra.
-  readonly fetchAudio?: (url: string) => Promise<Response>;
+  readonly fetchAudio?: (
+    url: string,
+    signal: AbortSignal,
+  ) => Promise<Response>;
 }
 
 export interface PreparationQueue {
   enqueue(track: PreparationTrack): PreparationHandle;
 
-  // Lấy kết quả theo FIFO.
-  // Trả null nếu đầu hàng còn đang chuẩn bị hoặc không còn kết quả.
   takeNextReady(): PreparedTrack | null;
 
+  cancel(taskId: string): boolean;
+
   getSnapshot(): PreparationSnapshot;
+
+  dispose(): Promise<void>;
 }
 
 export const PREPARATION_CONCURRENCY = 2;

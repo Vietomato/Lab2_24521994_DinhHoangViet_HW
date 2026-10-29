@@ -1,5 +1,6 @@
 import { PREPARATION_CONCURRENCY } from "../contracts/preparation";
 import type {
+  PreparationCancellationReason,
   PreparationDependencies,
   PreparationHandle,
   PreparationOutcome,
@@ -18,6 +19,7 @@ interface TaskRecord {
   status: PreparationStatus;
   error: Error | null;
   buffer: AudioBuffer | null;
+  controller: AbortController | null;
   taken: boolean;
   settled: boolean;
 
@@ -26,18 +28,22 @@ interface TaskRecord {
   ) => void;
 }
 
-// Phân biệt ID giữa các queue trong cùng vòng đời module.
 let nextQueueId = 0;
 
 export function createPreparationQueue({
   engine,
-  fetchAudio = url => fetch(url),
+  fetchAudio = (url, signal) => fetch(url, { signal }),
 }: PreparationDependencies): PreparationQueue {
   const queueId = ++nextQueueId;
   const tasks: TaskRecord[] = [];
 
+  // Theo dõi các thao tác thật để dispose có thể chờ chúng.
+  const operations = new Set<Promise<void>>();
+
   let nextSequence = 0;
   let activePreparations = 0;
+  let disposed = false;
+  let disposePromise: Promise<void> | null = null;
 
   function settle(
     task: TaskRecord,
@@ -51,9 +57,51 @@ export function createPreparationQueue({
     task.resolvePrepared(outcome);
   }
 
+  function canContinue(task: TaskRecord): boolean {
+    return !disposed && task.status === "loading";
+  }
+
+  function cancelTask(
+    task: TaskRecord,
+    reason: PreparationCancellationReason,
+  ): boolean {
+    if (
+      task.taken ||
+      task.status === "cancelled" ||
+      task.status === "error"
+    ) {
+      return false;
+    }
+
+    task.status = "cancelled";
+    task.buffer = null;
+
+    settle(task, {
+      status: "cancelled",
+      taskId: task.id,
+      reason,
+    });
+
+    // Không giảm activePreparations ở đây.
+    task.controller?.abort();
+
+    return true;
+  }
+
   async function prepare(task: TaskRecord): Promise<void> {
     try {
-      const response = await fetchAudio(task.track.url);
+      if (!canContinue(task) || task.controller === null) {
+        return;
+      }
+
+      const response = await fetchAudio(
+        task.track.url,
+        task.controller.signal,
+      );
+
+      if (!canContinue(task)) {
+        return;
+      }
 
       if (!response.ok) {
         throw new Error(
@@ -62,7 +110,18 @@ export function createPreparationQueue({
       }
 
       const bytes = await response.arrayBuffer();
+
+      if (!canContinue(task)) {
+        return;
+      }
+
+      // Decode không nhận AbortSignal.
       const buffer = await engine.decode(bytes);
+
+      // Không lưu buffer hoặc ghi ready nếu đã hủy/dispose.
+      if (!canContinue(task)) {
+        return;
+      }
 
       task.buffer = buffer;
       task.status = "ready";
@@ -72,6 +131,11 @@ export function createPreparationQueue({
         taskId: task.id,
       });
     } catch (cause: unknown) {
+      // Lỗi đến muộn sau cancellation không đổi cancelled thành error.
+      if (!canContinue(task)) {
+        return;
+      }
+
       const error =
         cause instanceof Error
           ? cause
@@ -87,33 +151,76 @@ export function createPreparationQueue({
         error,
       });
     } finally {
-      // Slot chỉ được trả sau toàn bộ fetch + đọc body + decode.
+      task.controller = null;
+
+      // Chỉ trả slot khi thao tác thật đã thoát.
       activePreparations -= 1;
-      pump();
+
+      if (!disposed) {
+        pump();
+      }
     }
   }
 
   function pump(): void {
+    if (disposed) {
+      return;
+    }
+
     while (activePreparations < PREPARATION_CONCURRENCY) {
-      // tasks giữ nguyên thứ tự enqueue.
       const nextTask = tasks.find(task => task.status === "queued");
 
       if (nextTask === undefined) {
         return;
       }
 
-      // Đặt trạng thái và chiếm slot trước khi bắt đầu async.
       nextTask.status = "loading";
+      nextTask.controller = new AbortController();
       activePreparations += 1;
 
-      // prepare tự xử lý lỗi fetch/decode.
-      void prepare(nextTask);
+      // Đăng ký operation trước khi chạy fetch.
+      const operation = Promise.resolve().then(() =>
+        prepare(nextTask),
+      );
+
+      operations.add(operation);
+
+      void operation.then(() => {
+        operations.delete(operation);
+      });
     }
+  }
+
+  function cancel(taskId: string): boolean {
+    if (disposed) {
+      return false;
+    }
+
+    const task = tasks.find(item => item.id === taskId);
+
+    if (task === undefined) {
+      return false;
+    }
+
+    const accepted = cancelTask(task, "user");
+
+    if (accepted) {
+      pump();
+    }
+
+    return accepted;
   }
 
   function enqueue(
     track: PreparationTrack,
   ): PreparationHandle {
+    if (disposed) {
+      throw new DOMException(
+        "Preparation queue đã được dispose.",
+        "InvalidStateError",
+      );
+    }
+
     const sequence = nextSequence++;
     const id = `queue-${queueId}-task-${sequence}`;
 
@@ -125,34 +232,41 @@ export function createPreparationQueue({
       resolvePrepared = resolve;
     });
 
-    const task: TaskRecord = {
+    tasks.push({
       id,
-
-      // Chụp lại metadata, tránh caller thay đổi object gốc.
       track: {
         title: track.title,
         url: track.url,
       },
-
       sequence,
       status: "queued",
       error: null,
       buffer: null,
+      controller: null,
       taken: false,
       settled: false,
       resolvePrepared,
-    };
+    });
 
-    tasks.push(task);
     pump();
 
-    return { id, prepared };
+    return {
+      id,
+      prepared,
+      cancel: () => cancel(id),
+    };
   }
 
   function takeNextReady(): PreparedTrack | null {
-    // Bỏ qua task lỗi và kết quả đã được lấy.
+    if (disposed) {
+      return null;
+    }
+
     const nextTask = tasks.find(
-      task => !task.taken && task.status !== "error",
+      task =>
+        !task.taken &&
+        task.status !== "error" &&
+        task.status !== "cancelled",
     );
 
     if (
@@ -171,8 +285,6 @@ export function createPreparationQueue({
     };
 
     nextTask.taken = true;
-
-    // Chuyển quyền giữ buffer cho bên nhận kết quả.
     nextTask.buffer = null;
 
     return result;
@@ -180,6 +292,7 @@ export function createPreparationQueue({
 
   function getSnapshot(): PreparationSnapshot {
     return {
+      disposed,
       activePreparations,
       tasks: tasks.map(task => ({
         id: task.id,
@@ -195,9 +308,45 @@ export function createPreparationQueue({
     };
   }
 
+  function dispose(): Promise<void> {
+    if (disposePromise !== null) {
+      return disposePromise;
+    }
+
+    let resolveDispose!: () => void;
+    let rejectDispose!: (reason: unknown) => void;
+
+    // Tạo promise trước khi abort, bảo đảm gọi lặp an toàn.
+    disposePromise = new Promise<void>((resolve, reject) => {
+      resolveDispose = resolve;
+      rejectDispose = reject;
+    });
+
+    disposed = true;
+
+    for (const task of tasks) {
+      cancelTask(task, "queue-disposed");
+    }
+
+    // Queue không giữ lịch sử/buffer sau dispose.
+    // Worker đang chạy vẫn giữ record riêng để hoàn tất cleanup.
+    tasks.length = 0;
+
+    void Promise.all([...operations]).then(
+      () => {
+        resolveDispose();
+      },
+      rejectDispose,
+    );
+
+    return disposePromise;
+  }
+
   return {
     enqueue,
     takeNextReady,
+    cancel,
     getSnapshot,
+    dispose,
   };
 }
