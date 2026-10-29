@@ -59,18 +59,18 @@ Verify: normal reservation/checkout flow, failure recovery, cancellation, expiry
 
 Commit: feat(state): implement reservation lifecycle
 Task 4 — Mock Inventory Service
-- [ ] Implement reserve, cancel, expiry handling, checkout, and inventory snapshots against shared in-memory state.
-- [ ] Put simulated delays outside the synchronous stock validation/update section.
-- [ ] Never await between stock validation and its corresponding mutation.
-- [ ] Reject new reservations after the sale deadline.
-- [ ] Let confirmed reservations remain valid until their own expiry even if the sale ends.
-- [ ] Set expiresAt when the service grants a reservation, not when the client receives the response.
-- [ ] Treat now >= expiresAt as expired.
-- [ ] Make release operations idempotent and define request/checkout idempotency keys.
-- [ ] At the atomic checkout decision, a completed order remains completed; an already expired reservation cannot check out.
-- [ ] Ensure expiry processing and checkout cannot both consume/release the same held unit.
-- [ ] Inject clock, delay, and failure behavior for reproducible verification.
-- [ ] Define disposal for service-owned timers.
+- [X] Implement reserve, cancel, expiry handling, checkout, and inventory snapshots against shared in-memory state.
+- [X] Put simulated delays outside the synchronous stock validation/update section.
+- [X] Never await between stock validation and its corresponding mutation.
+- [X] Reject new reservations after the sale deadline.
+- [X] Let confirmed reservations remain valid until their own expiry even if the sale ends.
+- [X] Set expiresAt when the service grants a reservation, not when the client receives the response.
+- [X] Treat now >= expiresAt as expired.
+- [X] Make release operations idempotent and define request/checkout idempotency keys.
+- [X] At the atomic checkout decision, a completed order remains completed; an already expired reservation cannot check out.
+- [X] Ensure expiry processing and checkout cannot both consume/release the same held unit.
+- [X] Inject clock, delay, and failure behavior for reproducible verification.
+- [X] Define disposal for service-owned timers.
 Verify: normal reserve/cancel/checkout; duplicate requests; sold-out behavior; expiry boundary; inventory conservation.
 
 Commit: feat(service): implement inventory simulation

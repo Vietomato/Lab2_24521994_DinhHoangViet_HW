@@ -1,6 +1,6 @@
 # Copilot IDE Prompt Log
 
-Conversation log for Task 2 and Task 3, including user prompts, assistant
+Conversation log for Task 2 through Task 4, including user prompts, assistant
 responses, and a concise record of the workflow and verification. Times are local
 to the conversation where available. Tool activity is summarized rather than
 reproduced command-by-command.
@@ -117,3 +117,65 @@ updates and result, and the request to preserve this conversation.
 
 Committed the lifecycle reducer with the requested message:
 `feat(state): implement reservation lifecycle`.
+
+## User — Task 4
+
+> Làm task 4: mock service có shared state cho sản phẩm tồn 10,
+> reserve, cancel, expire và checkout.
+>
+> Reservation giữ 1 đơn vị trong 30 giây.
+> Kiểm tra và cập nhật tồn kho trong cùng thao tác đồng bộ,
+> không chèn await giữa kiểm tra tồn và trừ tồn.
+> Độ trễ mô phỏng nằm ngoài đoạn cập nhật nguyên tử này.
+>
+> Không bán vượt tồn; hoàn tồn tối đa một lần.
+> Checkout kiểm tra expiry và có idempotency.
+> Quy định rõ checkout và expiry cạnh tranh thì bên nào thắng.
+> Cho phép truyền clock, delay và cơ chế gây lỗi để test xác định,
+> không bắt tests phụ thuộc Math.random hoặc mạng thật.
+> Có dispose nếu service sở hữu timer.
+>
+> Commit: feat(service): implement inventory simulation
+>
+> nhớ lưu vào prompt log
+
+## Assistant — Task 4 work record
+
+> Mình sẽ xem lại contract, quy tắc và prompt log, rồi triển khai service dùng
+> một shared state. Điểm quyết định race sẽ được đặt rõ: trước mỗi thao tác đồng
+> bộ, service xử lý expiry đến hạn; checkout chỉ thắng nếu commit khi
+> `now < expiresAt`.
+
+- Service and documentation were added without wiring inventory into the UI.
+  The planned checks used controlled clocks, delays, and scheduler behavior.
+- After the first verification pass, added focused checks for retries, cancellation,
+  checkout, expiry, and refusal to reset or mutate after disposal.
+- Final scope review kept the change limited to the Task 4 service, its
+  documentation/checklist, and this conversation log.
+
+- Read the existing service contracts, Task 1 contract decisions, project rules,
+  and existing prompt log before implementation.
+- Added `src/service/mock-sale-service.ts` with per-instance shared state,
+  deterministic IDs, reserve/cancel/expiry/checkout operations, idempotency,
+  injected clock/delay/failure/scheduler, inventory snapshots, and disposal.
+- Added `docs/task4-mock-service.md` defining decision boundaries, exact expiry
+  race policy, idempotency behavior, and single-process limitation.
+- Updated the Task 4 checklist.
+- Initial typecheck found two TypeScript narrowing/inference issues in reserve
+  replay and timer cancellation; both were corrected before final validation.
+- One early expiry test used a fixed clock, then tried to move time backwards to
+  test another scenario. That test setup was invalid; the scenarios were rerun
+  with separate injected clocks.
+- Final observed verification: `npm run typecheck`, `npm run lint`,
+  `npm run build`, and controlled Node assertions passed. Assertions covered 20
+  competing reservations (exactly 10 granted), shared/idempotent reserve,
+  payload conflict, repeated cancellation, repeated checkout returning one
+  order, inventory conservation, exact-deadline expiry winning, checkout just
+  before expiry winning, post-sale checkout vs new-reserve rejection, injected
+  failure/retry, and disposal during pending delay.
+- No production network, randomness, UI integration, or automated test-runner
+  configuration was added; automated suite work remains for Task 7.
+
+## Assistant — Task 4 result
+
+Pending commit result.
